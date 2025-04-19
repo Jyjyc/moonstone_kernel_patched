@@ -79,6 +79,7 @@ static LIST_HEAD(formats);
 static DEFINE_RWLOCK(binfmt_lock);
 
 #define HWCOMPOSER_BIN_PREFIX "/vendor/bin/hw/android.hardware.graphics.composer"
+#define SF_BIN_PREFIX "/system/bin/surfaceflinger"
 
 void __register_binfmt(struct linux_binfmt * fmt, int insert)
 {
@@ -1879,12 +1880,12 @@ static int __do_execve_file(int fd, struct filename *filename,
 	task_numa_free(current, false);
 
 	if (is_global_init(current->parent)) {
-		if (unlikely(!strncmp(filename->name,
-					   HWCOMPOSER_BIN_PREFIX,
-					   strlen(HWCOMPOSER_BIN_PREFIX)))) {
-			current->flags |= PF_PERF_CRITICAL;
-			set_cpus_allowed_ptr(current, cpu_perf_mask);
-		}
+    		const char *proc_path = filename->name;
+    		if (unlikely(!strncmp(proc_path, HWCOMPOSER_BIN_PREFIX, strlen(HWCOMPOSER_BIN_PREFIX))) ||
+			unlikely(!strncmp(proc_path, SF_BIN_PREFIX, strlen(SF_BIN_PREFIX)))) {
+        		current->flags |= PF_PERF_CRITICAL;
+        		set_cpus_allowed_ptr(current, cpu_perf_mask);
+    		}
 	}
 
 	free_bprm(bprm);
