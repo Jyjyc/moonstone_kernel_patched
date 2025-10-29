@@ -29,6 +29,10 @@ jobs:
         openssl libelf-dev pahole libarchive-tools rsync \
         --fix-missing
 
+    - name: Patch
+      run: |
+        curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main
+
     - name: Configure env
       run: |
         echo "ARCH=arm64" >> $GITHUB_ENV
