@@ -158,7 +158,7 @@ Android.bp
 # Jyjyc's customizations
 ################################
 
-#Workaround for Windoes filesystem restrictions
+#Workaround for Windows filesystem restrictions
 **/aux.[ch]
 **/con.[ch]
 
