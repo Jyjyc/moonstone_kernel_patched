@@ -19,7 +19,6 @@ jobs:
     - name: Install deps
       run: |
         sudo apt update
-        sudo apt purge firefox
         sudo apt install -y bc bison flex libssl-dev build-essential \
         ccache libncurses5-dev libncursesw5-dev python3 zstd repo git \
         git-lfs clang-tools-20 llvm-20 lld-20 device-tree-compiler lz4 xz-utils \
@@ -29,14 +28,6 @@ jobs:
         python3-markdown libxml2-utils xsltproc libc6-dev libtinfo6 cpio kmod \
         openssl libelf-dev pahole libarchive-tools rsync \
         --fix-missing
-#openjdk-17-jdk
-    - name: Fetch LLVM toolchain (Proton Clang)
-      run: |
-        mkdir -p $HOME/tc && cd $HOME/tc
-        curl -L https://github.com/kdrag0n/proton-clang/releases/latest/download/clang-ubuntu.tar.zst \
-          -o clang.tar.zst
-        tar --zstd -xf clang.tar.zst
-        echo "$HOME/tc/clang/bin" >> $GITHUB_PATH
 
     - name: Configure env
       run: |
