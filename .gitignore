@@ -159,8 +159,8 @@ Android.bp
 ################################
 
 #Workaround for Windows filesystem restrictions
-**/aux.[ch]
-**/con.[ch]
+#**/aux.[ch]
+#**/con.[ch]
 
 #Notepad++ backups
 **/nppBackup/**
