@@ -43,8 +43,10 @@ jobs:
         cp ./kernel_patches/50_add_susfs_in_kernel-5.4.patch $KERNEL_ROOT/common/
         cp ./kernel_patches/fs/* $KERNEL_ROOT/common/fs/
         cp ./kernel_patches/include/linux/* $KERNEL_ROOT/common/include/linux/
-        cd $KERNEL_ROOT/KernelSU and then patch -p1 < 10_enable_susfs_for_ksu.patch
-        cd $KERNEL_ROOT/common and then patch -p1 < 50_add_susfs_in_kernel.patch
+        cd $KERNEL_ROOT/KernelSU
+        patch -p1 < 10_enable_susfs_for_ksu.patch
+        cd $KERNEL_ROOT/common
+        patch -p1 < 50_add_susfs_in_kernel.patch
         cd $KERNEL_ROOT
 
     - name: Configure env
