@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
 #    branches: [ main, dev, ci/* ]
-    branches: [ SukiSU%2Bsusfs-test ]
+    branches: [ "SukiSU+susfs-test" ]
 
 jobs:
   build:
