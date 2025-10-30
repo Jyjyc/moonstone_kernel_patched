@@ -39,6 +39,8 @@ jobs:
         cd $MYDIR
         git clone --branch kernel-5.4 --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs
         cd susfs
+        echo "current dir: $(pwd)"
+        ls -la
         cp ./kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch $KERNEL_ROOT/KernelSU/
         cp ./kernel_patches/50_add_susfs_in_kernel-5.4.patch.patch $KERNEL_ROOT/common/
         cp ./kernel_patches/fs/* $KERNEL_ROOT/common/fs/
