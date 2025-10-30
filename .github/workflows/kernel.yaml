@@ -33,7 +33,7 @@ jobs:
       run: |
         bash setup.sh susfs-main
         cd "$KERNEL_ROOT"
-        $MYDIR="$KERNEL_ROOT/tmp_dwl"
+        MYDIR="$KERNEL_ROOT/tmp_dwl"
         mkdir $MYDIR && cd $MYDIR && git clone https://gitlab.com/simonpunk/susfs4ksu.git susfs
         cd susfs
         git checkout kernel-5.4
