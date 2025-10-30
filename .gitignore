@@ -164,3 +164,6 @@ Android.bp
 
 #Notepad++ backups
 **/nppBackup/**
+
+#Zone identifier
+*:Zone.Identifier
