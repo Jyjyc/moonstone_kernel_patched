@@ -32,13 +32,10 @@ jobs:
     - name: Patch
       run: |
         bash setup.sh susfs-main
-        cd "$KERNEL_ROOT"
+        KERNEL_ROOT=$(pwd)
+        echo "KERNEL_ROOT: $KERNEL_ROOT"
         MYDIR="$KERNEL_ROOT/tmp_dwl"
-        mkdir $MYDIR && cd $MYDIR && git clone https://gitlab.com/simonpunk/susfs4ksu.git susfs
-        cd susfs
-        git checkout kernel-5.4
-        git pull
-        git checkout "$(git describe --abbrev=0 --tags)" && echo "[-] Checked out latest tag."
+        mkdir $MYDIR && cd $MYDIR && git git clone --branch kernel-5.4  --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs && cd susfs
         cp ./kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch $KERNEL_ROOT/KernelSU/
         cp ./kernel_patches/50_add_susfs_in_kernel-<kernel_version>.patch $KERNEL_ROOT/common/
         cp ./kernel_patches/fs/* $KERNEL_ROOT/common/fs/
