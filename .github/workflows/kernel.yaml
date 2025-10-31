@@ -9,19 +9,19 @@ jobs:
   build:
     runs-on: ubuntu-24.04
 
-    steps:
-    - name: Maximize Build Space
-      uses: AdityaGarg8/remove-unwanted-software@v5
-      with:
-        remove-dotnet: 'true'          # Frees ~2 GB
-        remove-android: 'true'         # Frees ~9 GB
-        remove-haskell: 'true'         # Frees ~5.2 GB
-        remove-codeql: 'true'          # Frees ~5.4 GB
-        remove-docker-images: 'true'   # Frees ~3.2 GB
-        remove-large-packages: 'true'  # Frees ~3.1 GB
-        remove-swapfile: 'true'        # Frees ~4 GB
-        remove-cached-tools: 'false'   # Avoid unless confirmed safe
-        verbose: 'true'                # Enable detailed logging
+#    steps:
+#    - name: Maximize Build Space
+#      uses: AdityaGarg8/remove-unwanted-software@v5
+#      with:
+#        remove-dotnet: 'true'          # Frees ~2 GB
+#        remove-android: 'true'         # Frees ~9 GB
+#        remove-haskell: 'true'         # Frees ~5.2 GB
+#        remove-codeql: 'true'          # Frees ~5.4 GB
+#        remove-docker-images: 'true'   # Frees ~3.2 GB
+#        remove-large-packages: 'true'  # Frees ~3.1 GB
+#        remove-swapfile: 'true'        # Frees ~4 GB
+#        remove-cached-tools: 'false'   # Avoid unless confirmed safe
+#        verbose: 'true'                # Enable detailed logging
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -39,25 +39,26 @@ jobs:
         erofs-utils default-jdk gnupg gperf zip curl libncurses-dev libx11-dev \
         libreadline-dev libgl1 libgl1-mesa-dev make sudo bc grep tofrodos \
         python3-markdown libxml2-utils xsltproc libc6-dev libtinfo6 cpio kmod \
-        openssl libelf-dev pahole libarchive-tools rsync ssh \
+        openssl libelf-dev pahole libarchive-tools rsync ssh git-core \
+        x11proto-core-dev unzip fontconfig \
         --fix-missing
 
 
-    - name: ccache
-      run: |
-        mkdir -p ~/.cache/bazel
-        ccache --version
-        ccache --max-size=2G
-        ccache --set-config=compression=true
-        echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_
+#    - name: ccache
+#      run: |
+#        mkdir -p ~/.cache/github_ci
+#        ccache --version
+#        ccache --max-size=2G
+#        ccache --set-config=compression=true
+#        echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_
 
-    - name: ccache
-      uses: actions/cache@v4
-      with:
-        path: ~/.ccache
-        key: mykernel-ccache-${{ github.sha }}
-        restore-keys: |
-          mykernel-cca
+#    - name: ccache
+#      uses: actions/cache@v4
+#      with:
+#        path: ~/.ccache
+#        key: mykernel-ccache-${{ github.sha }}
+#        restore-keys: |
+#          mykernel-cca
 
     - name: Patch
       continue-on-error: true
