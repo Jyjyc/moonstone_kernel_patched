@@ -34,8 +34,15 @@ jobs:
         bash setup.sh susfs-main
         KERNEL_ROOT=$(pwd)
         echo "KERNEL_ROOT: $KERNEL_ROOT"
-        cp -r $KERNEL_ROOT/kernel_patches/* $KERNEL_ROOT/
+        echo "ls: $(pwd)"
+        ls -la
+        cp -rf $KERNEL_ROOT/kernel_patches/* $KERNEL_ROOT/
         cd $KERNEL_ROOT/KernelSU
+        echo "ls: $(pwd)"
+        ls -la
+        cd $KERNEL_ROOT
+        echo "ls: $(pwd)"
+        ls -la
         patch -p1 < 10_enable_susfs_for_ksu_kconfig_only.patch
         patch -p1 < 20_enable_susfs_for_ksu.patch
 #        cd $KERNEL_ROOT
