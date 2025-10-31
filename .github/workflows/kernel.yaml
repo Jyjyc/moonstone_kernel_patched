@@ -10,6 +10,19 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+    - name: Maximize Build Space
+      uses: AdityaGarg8/remove-unwanted-software@v5
+      with:
+        remove-dotnet: 'true'          # Frees ~2 GB
+        remove-android: 'true'         # Frees ~9 GB
+        remove-haskell: 'true'         # Frees ~5.2 GB
+        remove-codeql: 'true'          # Frees ~5.4 GB
+        remove-docker-images: 'true'   # Frees ~3.2 GB
+        remove-large-packages: 'true'  # Frees ~3.1 GB
+        remove-swapfile: 'true'        # Frees ~4 GB
+        remove-cached-tools: 'false'   # Avoid unless confirmed safe
+        verbose: 'true'                # Enable detailed logging
+
     - name: Checkout
       uses: actions/checkout@v4
       with:
@@ -17,7 +30,8 @@ jobs:
 
     - name: Install deps
       run: |
-        sudo apt update
+        sudo apt update && sudo apt upgrade -y
+        sudo apt purge firefox -y 
         sudo apt install -y bc bison flex libssl-dev build-essential \
         ccache libncurses5-dev libncursesw5-dev python3 zstd repo git \
         git-lfs clang-tools llvm lld device-tree-compiler lz4 xz-utils \
@@ -27,6 +41,23 @@ jobs:
         python3-markdown libxml2-utils xsltproc libc6-dev libtinfo6 cpio kmod \
         openssl libelf-dev pahole libarchive-tools rsync ssh \
         --fix-missing
+
+
+    - name: ccache
+      run: |
+        mkdir -p ~/.cache/bazel
+        ccache --version
+        ccache --max-size=2G
+        ccache --set-config=compression=true
+        echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_
+
+    - name: ccache
+      uses: actions/cache@v4
+      with:
+        path: ~/.ccache
+        key: mykernel-ccache-${{ github.sha }}
+        restore-keys: |
+          mykernel-cca
 
     - name: Patch
       continue-on-error: true
