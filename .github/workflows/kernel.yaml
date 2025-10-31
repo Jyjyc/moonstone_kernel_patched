@@ -45,9 +45,9 @@ jobs:
         cd $KERNEL_ROOT/KernelSU
         patch -p1 < 10_enable_susfs_for_ksu_kconfig_only.patch
         patch -p1 < 10_enable_susfs_for_ksu_Makefile_only.patch
-#        patch -p1 < 20_enable_susfs_for_ksu.patch
-#        cd $KERNEL_ROOT
-#        patch -p1 < 50_add_susfs_in_kernel
+        patch -p1 < 20_enable_susfs_for_ksu.patch
+        cd $KERNEL_ROOT
+        patch -p1 < 50_add_susfs_in_kernel
 
     - name: Configure env
       run: |
