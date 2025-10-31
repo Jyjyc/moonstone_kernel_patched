@@ -32,7 +32,6 @@ jobs:
     - name: Patch
       run: |
         KERNEL_ROOT=$(pwd)
-        cd $KERNEL_ROOT/kernel_patches
         cp -rf $KERNEL_ROOT/kernel_patches/* $KERNEL_ROOT/
 
     - name: Configure env
