@@ -31,23 +31,9 @@ jobs:
 
     - name: Patch
       run: |
-        #bash setup.sh susfs-main
         KERNEL_ROOT=$(pwd)
-        echo "KERNEL_ROOT: $KERNEL_ROOT"
-        #echo "ls: $(pwd)"
-        #ls -la
         cd $KERNEL_ROOT/kernel_patches
-        #cp -f $KERNEL_ROOT/kernel_patches/50_add_susfs_in_kernel $KERNEL_ROOT/50_add_susfs_in_kernel-5.4.patch
-        #cp -rf $KERNEL_ROOT/kernel_patches/KernelSU/* $KERNEL_ROOT/KernelSU/
-        #cp -rf $KERNEL_ROOT/kernel_patches/fs/* $KERNEL_ROOT/fs/
-        #cp -rf $KERNEL_ROOT/kernel_patches/include/linux/* $KERNEL_ROOT/include/linux/
         cp -rf $KERNEL_ROOT/kernel_patches/* $KERNEL_ROOT/
-        #cd $KERNEL_ROOT/KernelSU
-        #patch -p1 < 10_enable_susfs_for_ksu_kconfig_only.patch
-        #patch -p1 < 10_enable_susfs_for_ksu_Makefile_only.patch
-        #patch -p1 < 20_enable_susfs_for_ksu.patch
-        #cd $KERNEL_ROOT
-        #patch -p1 < 50_add_susfs_in_kernel
 
     - name: Configure env
       run: |
