@@ -29,21 +29,8 @@ jobs:
         --fix-missing
 
     - name: Patch
-      continue-on-error: true
       run: |
-        KERNEL_REPO=$(pwd)
-        echo "KERNEL_REPO: $KERNEL_REPO"
         curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s main
-        git clone --branch kernel-5.4 --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs
-        cd susfs
-        cp ./kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch $KERNEL_REPO/KernelSU/
-        cp ./kernel_patches/50_add_susfs_in_kernel-5.4.patch $KERNEL_REPO/common/
-        cp ./kernel_patches/fs/* $KERNEL_REPO/common/fs/
-        cp ./kernel_patches/include/linux/* $KERNEL_REPO/common/include/linux/
-        cd $KERNEL_REPO/KernelSU
-        patch -p1 < 10_enable_susfs_for_ksu.patch
-        cd $KERNEL_REPO/common
-        patch -p1 < 50_add_susfs_in_kernel.patch
 
     - name: Configure env
       run: |
@@ -72,6 +59,10 @@ jobs:
           #--enable CONFIG_KPROBES \
           #--enable CONFIG_KRETPROBES
         make -j$(nproc) O=out olddefconfig
+
+    - name: Build kernel
+      run: |
+        make -j$(nproc) O=out
   
     - name: Collect .rej files
       if: always()
@@ -80,6 +71,7 @@ jobs:
         mkdir -p rejects
         find . -name "*.rej" | zip -@ rejects/rejects.zip
 
+
     - name: Upload patch rejects
       if: always()   # still upload even if build failed
       continue-on-error: true
@@ -87,15 +79,6 @@ jobs:
       with:
         name: patch-rejects
         path: rejects/
-
-    - name: Abort before build
-      if: ${{ failure() }}
-      run: |
-        exit 1
-
-    - name: Build kernel
-      run: |
-        make -j$(nproc) O=out
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
