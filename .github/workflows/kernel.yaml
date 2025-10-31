@@ -33,7 +33,7 @@ jobs:
       run: |
         KERNEL_ROOT=$(pwd)
         cp -rfv $KERNEL_ROOT/kernel_patches/* $KERNEL_ROOT/
-        mv -rfv $KERNEL_ROOT/include/linux $KERNEL_ROOT/linux
+        mv -fv $KERNEL_ROOT/include/linux $KERNEL_ROOT/linux
         cd $KERNEL_ROOT/KernelSU/kernel
         patch -p1 < kernelnosu.5084a80ec4b6de56ea080628af5de15a54d8fea9.patch
 
