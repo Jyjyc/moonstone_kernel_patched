@@ -1,0 +1,73 @@
+From eb3345b46282656fd1a74c41976c9cd9b3de4b55 Mon Sep 17 00:00:00 2001
+From: nullptr03 <nullptr03@singkolab.my.id>
+Date: Wed, 15 Jan 2025 12:48:52 +0000
+Subject: [PATCH] Kernel: Add APatch support config
+
+This is very helpful for enable the features needed for APatch to run
+normally
+Reference: https://github.com/teerasak/Apatch_Action_template/blob/main/apatch/Kconfig
+---
+ APatch/Kconfig  | 29 +++++++++++++++++++++++++++++
+ Kconfig         |  2 ++
+ kernel/module.c |  2 +-
+ 3 files changed, 32 insertions(+), 1 deletion(-)
+ create mode 100644 APatch/Kconfig
+
+diff --git a/APatch/Kconfig b/APatch/Kconfig
+new file mode 100644
+index 000000000000..2f11ac52ff39
+--- /dev/null
++++ b/APatch/Kconfig
+@@ -0,0 +1,29 @@
++menu "APatch Support"
++
++config APATCH_SUPPORT
++    bool "Enable Basic APatch support"
++    default n
++    select DEBUG_KERNEL
++    select KALLSYMS
++    select KALLSYMS_ALL
++    select SYSFS_SYSCALL
++    select SIGNALFD
++    select TIMERFD
++    select EVENTFD
++    select OVERLAY_FS
++    help
++        This helps you to enable requirements for APatch.
++
++config APATCH_FIX_MODULES
++    tristate "Fix kernel modules in APatch"
++    default y if APATCH_SUPPORT
++    depends on APATCH_SUPPORT
++    select MODULES
++    select MODULE_FORCE_LOAD
++    select MODULE_UNLOAD
++    select MODULE_FORCE_UNLOAD
++    select MODVERSIONS
++    help
++           Enable load modules.
++
++endmenu
+diff --git a/Kconfig b/Kconfig
+index 745bc773f567..3cc1aa358b27 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -30,3 +30,5 @@ source "lib/Kconfig"
+ source "lib/Kconfig.debug"
+ 
+ source "Documentation/Kconfig"
++
++source "APatch/Kconfig"
+diff --git a/kernel/module.c b/kernel/module.c
+index adceceb6c49f..f739538dc1cb 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -1345,7 +1345,7 @@ static int check_version(const struct load_info *info,
+ bad_version:
+ 	pr_warn("%s: disagrees about version of symbol %s\n",
+ 	       info->name, symname);
+-	return 0;
++	return IS_ENABLED(CONFIG_APATCH_FIX_MODULES) ? 1 : 0;
+ }
+ 
+ static inline int check_modstruct_version(const struct load_info *info,
