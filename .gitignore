@@ -35,7 +35,7 @@
 *.ns_deps
 *.o
 *.o.*
-*.patch
+#*.patch
 *.s
 *.so
 *.so.dbg
