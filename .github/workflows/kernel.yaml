@@ -36,7 +36,10 @@ jobs:
         echo "KERNEL_ROOT: $KERNEL_ROOT"
         echo "ls: $(pwd)"
         ls -la
-        cp -f $KERNEL_ROOT/kernel_patches/50_add_susfs_in_kernel-5.4.patch $KERNEL_ROOT/50_add_susfs_in_kernel-5.4.patch
+        cd $KERNEL_ROOT/kernel_patches
+        echo "ls: $(pwd)"
+        ls -la
+        cp -f $KERNEL_ROOT/kernel_patches/50_add_susfs_in_kernel $KERNEL_ROOT/50_add_susfs_in_kernel-5.4.patch
         cp -rf $KERNEL_ROOT/kernel_patches/KernelSU/* $KERNEL_ROOT/KernelSU/
         cp -rf $KERNEL_ROOT/kernel_patches/fs/* $KERNEL_ROOT/fs/
         cp -rf $KERNEL_ROOT/kernel_patches/include/linux/* $KERNEL_ROOT/include/linux/
@@ -49,7 +52,7 @@ jobs:
         patch -p1 < 10_enable_susfs_for_ksu_kconfig_only.patch
 #        patch -p1 < 20_enable_susfs_for_ksu.patch
 #        cd $KERNEL_ROOT
-#        patch -p1 < 50_add_susfs_in_kernel.patch
+#        patch -p1 < 50_add_susfs_in_kernel
 
     - name: Configure env
       run: |
