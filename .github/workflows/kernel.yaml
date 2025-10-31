@@ -64,6 +64,20 @@ jobs:
     - name: Build kernel
       run: |
         make -j$(nproc) O=out
+  
+    - name: Collect .rej files
+      if: always()
+      run: |
+        mkdir -p rejects
+        find . -name "*.rej" | zip -@ rejects/rejects.zip
+
+
+    - name: Upload patch rejects
+      if: always()   # still upload even if build failed
+      uses: actions/upload-artifact@v4
+      with:
+        name: patch-rejects
+        path: rejects/
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
