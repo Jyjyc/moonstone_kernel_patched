@@ -31,7 +31,7 @@ jobs:
     - name: Install deps
       run: |
         sudo apt update && sudo apt upgrade -y
-        sudo apt purge firefox -y 
+        sudo apt remove firefox -y 
         sudo apt install -y bc bison flex libssl-dev build-essential \
         ccache libncurses5-dev libncursesw5-dev python3 zstd repo git \
         git-lfs clang-tools llvm lld device-tree-compiler lz4 xz-utils \
