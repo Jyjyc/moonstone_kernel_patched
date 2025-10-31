@@ -36,7 +36,7 @@ jobs:
         echo "KERNEL_ROOT: $KERNEL_ROOT"
         echo "ls: $(pwd)"
         ls -la
-        cp -rf $KERNEL_ROOT/kernel_patches/* $KERNEL_ROOT/
+        cp -rf $KERNEL_ROOT/kernel_patches/ $KERNEL_ROOT
         cd $KERNEL_ROOT/KernelSU
         echo "ls: $(pwd)"
         ls -la
