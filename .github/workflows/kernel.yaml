@@ -31,7 +31,7 @@ jobs:
 
     - name: Patch
       run: |
-        bash setup.sh susfs-main
+        #bash setup.sh susfs-main
         KERNEL_ROOT=$(pwd)
         echo "KERNEL_ROOT: $KERNEL_ROOT"
         echo "ls: $(pwd)"
