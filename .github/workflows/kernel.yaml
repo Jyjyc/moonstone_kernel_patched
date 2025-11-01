@@ -10,18 +10,18 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-#    - name: Maximize Build Space
-#      uses: AdityaGarg8/remove-unwanted-software@v5
-#      with:
-#        remove-dotnet: 'true'          # Frees ~2 GB
-#        remove-android: 'true'         # Frees ~9 GB
-#        remove-haskell: 'true'         # Frees ~5.2 GB
-#        remove-codeql: 'true'          # Frees ~5.4 GB
-#        remove-docker-images: 'true'   # Frees ~3.2 GB
-#        remove-large-packages: 'true'  # Frees ~3.1 GB
+    - name: Maximize Build Space
+      uses: AdityaGarg8/remove-unwanted-software@v5
+      with:
+        remove-dotnet: 'true'          # Frees ~2 GB
+        remove-android: 'true'         # Frees ~9 GB
+        remove-haskell: 'true'         # Frees ~5.2 GB
+        remove-codeql: 'true'          # Frees ~5.4 GB
+        remove-docker-images: 'true'   # Frees ~3.2 GB
+        remove-large-packages: 'true'  # Frees ~3.1 GB
 #        remove-swapfile: 'true'        # Frees ~4 GB
-#        remove-cached-tools: 'false'   # Avoid unless confirmed safe
-#        verbose: 'true'                # Enable detailed logging
+        remove-cached-tools: 'false'   # Avoid unless confirmed safe
+        verbose: 'true'                # Enable detailed logging
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -114,17 +114,12 @@ jobs:
         find . -name "*.rej" | zip -@ rejects/rejects.zip
 
     - name: Upload patch rejects
-      if: always()   # still upload even if build failed
+      if: always()
       continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
         name: patch-rejects
         path: rejects/
-
-    - name: Abort before build
-      if: ${{ failure() }}
-      run: |
-        exit 1
 
     - name: Build kernel
       run: |
