@@ -83,8 +83,8 @@ jobs:
         echo "CROSS_COMPILE=aarch64-none-linux-gnu-" >> $GITHUB_ENV
         echo "CLANG_TRIPLE=aarch64-linux-gnu-" >> $GITHUB_ENV
         echo "CC=clang" >> $GITHUB_ENV
-        echo "CFLAGS=\"-O2 -flto=thin\"" >> $GITHUB_ENV
-        echo "CXXFLAGS=\"-O2 -flto=thin\"" >> $GITHUB_ENV
+        echo "CFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
+        echo "CXXFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
         echo "LDFLAGS=\"-flto=thin -fuse-ld=lld\"" >> $GITHUB_ENV
         echo "LTO=thin" >> $GITHUB_ENV
         echo "LLVM=1" >> $GITHUB_ENV
