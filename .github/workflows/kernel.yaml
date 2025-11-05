@@ -106,14 +106,14 @@ jobs:
         make -j$(nproc) O=out olddefconfig
   
     - name: Collect .rej files
-      if: always()
+#      if: always()
       continue-on-error: true
       run: |
         mkdir -p rejects
         find . -name "*.rej" | zip -@ rejects/rejects.zip
 
     - name: Upload patch rejects
-      if: always()
+#      if: always()
       continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
