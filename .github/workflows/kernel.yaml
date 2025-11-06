@@ -65,7 +65,7 @@ jobs:
         KERNEL_REPO=$(pwd)
         echo "KERNEL_REPO: $KERNEL_REPO"
         curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main
-        git clone --branch kernel-5.4-jyc --single-branch https://github.com/Jyjyc/susfs4ksu.git susfs
+        git clone --branch kernel-5.4-jyc-test-1 --single-branch https://github.com/Jyjyc/susfs4ksu.git susfs
         cd susfs
         cat ./kernel_patches/KernelSU/10_enable_susfs_for_ksu_00*.patch $KERNEL_REPO/KernelSU/10_enable_susfs_for_ksu.patch
         cat ./kernel_patches/50_add_susfs_in_kernel-5.4/50_add_susfs_in_kernel-5.4_00*.patch $KERNEL_REPO/50_add_susfs_in_kernel.patch 
