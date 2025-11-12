@@ -72,9 +72,9 @@ jobs:
         cp ./kernel_patches/fs/* $KERNEL_REPO/fs/
         cp ./kernel_patches/include/linux/* $KERNEL_REPO/include/linux/
         cd $KERNEL_REPO/KernelSU
-        patch -p1 -F5 < 10_enable_susfs_for_ksu.patch
+        #patch -p1 -F5 < 10_enable_susfs_for_ksu.patch
         cd $KERNEL_REPO
-        patch -p1 -F5 < 50_add_susfs_in_kernel.patch
+        #patch -p1 -F5 < 50_add_susfs_in_kernel.patch
 
     - name: Configure env
       run: |
