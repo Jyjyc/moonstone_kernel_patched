@@ -79,7 +79,7 @@ jobs:
         #patch -p1 -F5 < 10_enable_susfs_for_ksu.patch
         cd $KERNEL_REPO
         #patch -p1 -F5 < 50_add_susfs_in_kernel.patch
-        patch -p1 -F5 < ./patches/0dbd07aeb40de769377236562d0155f0493876ac.patch
+        patch -p1 -F5 < ./patch/0dbd07aeb40de769377236562d0155f0493876ac.patch
 
     - name: Configure env
       run: |
