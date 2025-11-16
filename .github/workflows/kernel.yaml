@@ -82,6 +82,8 @@ jobs:
     - name: Patch
       continue-on-error: true
       run: |
+        echo "List Neutron dir"
+        ls -l $NEUTRON
         KERNEL_ROOT=$(pwd)
         echo "KERNEL_ROOT: $KERNEL_ROOT"
         echo "Setup SukiSU"
