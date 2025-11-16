@@ -74,21 +74,10 @@ jobs:
         restore-keys: |
           ccache
 
-    - name: Setup ccache
-      uses: alexjurkiewicz/setup-ccache@master
-      with:
-        max-size: 4G
-        extra-config: |
-          keep_comments_cpp = true
-          compression = true
 
     - name: Patch
       continue-on-error: true
       run: |
-        echo "List Neutron dir"
-        ls -l $NEUTRON
-        echo "Dump GitHub env"
-        cat $GITHUB_ENV
         KERNEL_ROOT=$(pwd)
         echo "KERNEL_ROOT: $KERNEL_ROOT"
         echo "Setup SukiSU"
