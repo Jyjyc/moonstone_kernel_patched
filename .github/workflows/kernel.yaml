@@ -88,9 +88,6 @@ jobs:
         #cat ./50_add_susfs_in_kernel-5.4/50_add_susfs_in_kernel-5.4_00*.patch > $KERNEL_ROOT/50_add_susfs_in_kernel.patch 
         cp ./fs/* $KERNEL_ROOT/fs/
         cp ./include/linux/* $KERNEL_ROOT/include/linux/
-        cd $KERNEL_ROOT/KernelSU
-        echo "Apply TWA_RESUME patch"
-        patch -p1 -F5 < twa_resume.patch
         #echo "Apply susfs patches"
         #patch -p1 -F5 < 10_enable_susfs_for_ksu.patch
         cd $KERNEL_ROOT
@@ -98,6 +95,9 @@ jobs:
         echo "Apply custom patches"
         cat ./patch/*.patch > $KERNEL_ROOT/custom.patch
         patch -p1 -F5 < $KERNEL_ROOT/custom.patch
+        cd $KERNEL_ROOT/KernelSU
+        echo "Apply TWA_RESUME patch"
+        patch -p1 -F5 < twa_resume.patch
 
     - name: Configure env
       run: |
