@@ -44,13 +44,17 @@ jobs:
         x11proto-core-dev unzip fontconfig lib32z1-dev \
         --fix-missing
 
-    - name: ccache
+    - name: Configure ccache
       run: |
-        mkdir -p $HOME/.ccache
-        export CCACHE_DIR="$HOME/.ccache"
+        mkdir -p ~/.ccache
+        export CCACHE_DIR="~/.ccache"
         echo "CCACHE_DIR=$CCACHE_DIR" >> $GITHUB_ENV
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
         echo "PATH=$PATH" >> $GITHUB_ENV
+        echo "max_size = 8G" >> ~/.ccache/ccache.conf
+        echo "compression = true" >> ~/.ccache/ccache.conf
+        echo "hash_dir = false" >> ~/.ccache/ccache.conf
+        echo "sloppiness = time_macros" >> ~/.ccache/ccache.conf
 
     - name: Cache compilation
       uses: actions/cache@v4
@@ -59,6 +63,9 @@ jobs:
         key: ccache
         restore-keys: |
           ccache
+#        key: ccache-${{ runner.os }}-${{ hashFiles('**/*.c', '**/*.h', '**/Makefile') }}
+#        restore-keys: |
+#          ccache-${{ runner.os }}-
 
 
     - name: Patch
@@ -97,17 +104,17 @@ jobs:
         echo "SUBARCH=arm64" >> $GITHUB_ENV
         echo "CROSS_COMPILE=aarch64-none-linux-gnu-" >> $GITHUB_ENV
         echo "CLANG_TRIPLE=aarch64-linux-gnu-" >> $GITHUB_ENV
-        echo "CC=$NEUTRON/clang" >> $GITHUB_ENV
-        echo "CXX=$NEUTRON/clang++" >> $GITHUB_ENV
-        echo "AR=$NEUTRON/llvm-ar" >> $GITHUB_ENV
-        echo "NM=$NEUTRON/llvm-nm" >> $GITHUB_ENV
-        echo "LD=$NEUTRON/ld.lld" >> $GITHUB_ENV
-        echo "STRIP=$NEUTRON/llvm-strip" >> $GITHUB_ENV
-        echo "OBJCOPY=$NEUTRON/llvm-objcopy" >> $GITHUB_ENV
-        echo "OBJDUMP=$NEUTRON/llvm-objdump" >> $GITHUB_ENV
-        echo "READELF=$NEUTRON/llvm-readelf" >> $GITHUB_ENV
-        echo "HOSTCC=$NEUTRON/clang" >> $GITHUB_ENV
-        echo "HOSTCXX=$NEUTRON/clang++" >> $GITHUB_ENV
+        echo "CC=ccache clang" >> $GITHUB_ENV
+        echo "CXX=ccache clang++" >> $GITHUB_ENV
+        echo "AR=llvm-ar" >> $GITHUB_ENV
+        echo "NM=llvm-nm" >> $GITHUB_ENV
+        echo "LD=ld.lld" >> $GITHUB_ENV
+        echo "STRIP=llvm-strip" >> $GITHUB_ENV
+        echo "OBJCOPY=llvm-objcopy" >> $GITHUB_ENV
+        echo "OBJDUMP=llvm-objdump" >> $GITHUB_ENV
+        echo "READELF=llvm-readelf" >> $GITHUB_ENV
+        echo "HOSTCC=ccache clang" >> $GITHUB_ENV
+        echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
         echo "CFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
         echo "CXXFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
         echo "LDFLAGS=\"-flto=thin -fuse-ld=lld\"" >> $GITHUB_ENV
