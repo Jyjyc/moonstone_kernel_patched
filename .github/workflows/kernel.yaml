@@ -58,21 +58,26 @@ jobs:
         export PATH="$NEUTRON:$PATH"
         echo "PATH=$PATH" >> $GITHUB_ENV
 
-#    - name: ccache
-#      run: |
-#        mkdir -p ~/.cache/github_ci
-#        ccache --version
-#        ccache --max-size=2G
-#        ccache --set-config=compression=true
-#        echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_
+    - name: ccache
+      run: |
+        mkdir -p $HOME/.ccache
+        echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
 
-#    - name: ccache
-#      uses: actions/cache@v4
-#      with:
-#        path: ~/.ccache
-#        key: mykernel-ccache-${{ github.sha }}
-#        restore-keys: |
-#          mykernel-cca
+    - name: Cache compilation
+      uses: actions/cache@v4
+      with:
+        path: ~/.ccache
+        key: ccache
+        restore-keys: |
+          ccache
+
+    - name: Setup ccache
+      uses: alexjurkiewicz/setup-ccache@master
+      with:
+        max-size: 4G
+        extra-config: |
+          keep_comments_cpp = true
+          compression = true
 
     - name: Patch
       continue-on-error: true
