@@ -124,15 +124,15 @@ jobs:
         echo "CLANG_TRIPLE=aarch64-linux-gnu-" >> $GITHUB_ENV
         echo "CC=$NEUTRON/clang" >> $GITHUB_ENV
         echo "CXX=$NEUTRON/clang++" >> $GITHUB_ENV
-        echo "AR=$NEUTRON/llvm-ar >> $GITHUB_ENV
-        echo "NM=$NEUTRON/llvm-nm >> $GITHUB_ENV
-        echo "LD=$NEUTRON/ld.lld >> $GITHUB_ENV
-        echo "STRIP=$NEUTRON/llvm-strip >> $GITHUB_ENV
-        echo "OBJCOPY=$NEUTRON/llvm-objcopy >> $GITHUB_ENV
-        echo "OBJDUMP=$NEUTRON/llvm-objdump >> $GITHUB_ENV
-        echo "READELF=$NEUTRON/llvm-readelf >> $GITHUB_ENV
-        echo "HOSTCC=$NEUTRON/clang >> $GITHUB_ENV
-        echo "HOSTCXX=$NEUTRON/clang++ >> $GITHUB_ENV
+        echo "AR=$NEUTRON/llvm-ar" >> $GITHUB_ENV
+        echo "NM=$NEUTRON/llvm-nm" >> $GITHUB_ENV
+        echo "LD=$NEUTRON/ld.lld" >> $GITHUB_ENV
+        echo "STRIP=$NEUTRON/llvm-strip" >> $GITHUB_ENV
+        echo "OBJCOPY=$NEUTRON/llvm-objcopy" >> $GITHUB_ENV
+        echo "OBJDUMP=$NEUTRON/llvm-objdump" >> $GITHUB_ENV
+        echo "READELF=$NEUTRON/llvm-readelf" >> $GITHUB_ENV
+        echo "HOSTCC=$NEUTRON/clang" >> $GITHUB_ENV
+        echo "HOSTCXX=$NEUTRON/clang++" >> $GITHUB_ENV
         echo "CFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
         echo "CXXFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
         echo "LDFLAGS=\"-flto=thin -fuse-ld=lld\"" >> $GITHUB_ENV
