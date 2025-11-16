@@ -53,7 +53,9 @@ jobs:
         curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
         chmod +x antman
         ./antman -S=latest --noconfirm --noprogress
-        export PATH="($pwd)/bin:$PATH"
+        export NEUTRON="($pwd)/bin"
+        echo "NEUTRON=$NEUTRON" >> $GITHUB_ENV
+        export PATH="$NEUTRON:$PATH"
         echo "PATH=$PATH" >> $GITHUB_ENV
 
 #    - name: ccache
@@ -108,18 +110,23 @@ jobs:
         echo "SUBARCH=arm64" >> $GITHUB_ENV
         echo "CROSS_COMPILE=aarch64-none-linux-gnu-" >> $GITHUB_ENV
         echo "CLANG_TRIPLE=aarch64-linux-gnu-" >> $GITHUB_ENV
-        echo "CC=clang" >> $GITHUB_ENV
+        echo "CC=$NEUTRON/clang" >> $GITHUB_ENV
+        echo "CXX=$NEUTRON/clang++" >> $GITHUB_ENV
+        echo "AR=$NEUTRON/llvm-ar >> $GITHUB_ENV
+        echo "NM=$NEUTRON/llvm-nm >> $GITHUB_ENV
+        echo "LD=$NEUTRON/ld.lld >> $GITHUB_ENV
+        echo "STRIP=$NEUTRON/llvm-strip >> $GITHUB_ENV
+        echo "OBJCOPY=$NEUTRON/llvm-objcopy >> $GITHUB_ENV
+        echo "OBJDUMP=$NEUTRON/llvm-objdump >> $GITHUB_ENV
+        echo "READELF=$NEUTRON/llvm-readelf >> $GITHUB_ENV
+        echo "HOSTCC=$NEUTRON/clang >> $GITHUB_ENV
+        echo "HOSTCXX=$NEUTRON/clang++ >> $GITHUB_ENV
         echo "CFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
         echo "CXXFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
         echo "LDFLAGS=\"-flto=thin -fuse-ld=lld\"" >> $GITHUB_ENV
         echo "LTO=thin" >> $GITHUB_ENV
         echo "LLVM=1" >> $GITHUB_ENV
         echo "LLVM_IAS=1" >> $GITHUB_ENV
-        echo "AR=llvm-ar" >> $GITHUB_ENV
-        echo "NM=llvm-nm" >> $GITHUB_ENV
-        echo "OBJCOPY=llvm-objcopy" >> $GITHUB_ENV
-        echo "OBJDUMP=llvm-objdump" >> $GITHUB_ENV
-        echo "STRIP=llvm-strip" >> $GITHUB_ENV
         echo "KBUILD_BUILD_USER=github" >> $GITHUB_ENV
         echo "KBUILD_BUILD_HOST=actions" >> $GITHUB_ENV
 
