@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-    # - name: Maximize Build Space
-      # uses: AdityaGarg8/remove-unwanted-software@v5
-      # with:
-        # remove-dotnet: 'true'          # Frees ~2 GB
+     - name: Maximize Build Space
+       uses: AdityaGarg8/remove-unwanted-software@v5
+       with:
+         remove-dotnet: 'true'          # Frees ~2 GB
         # remove-android: 'true'         # Frees ~9 GB
-        # remove-haskell: 'true'         # Frees ~5.2 GB
-        # remove-codeql: 'true'          # Frees ~5.4 GB
+         remove-haskell: 'true'         # Frees ~5.2 GB
+         remove-codeql: 'true'          # Frees ~5.4 GB
         # remove-docker-images: 'true'   # Frees ~3.2 GB
         # remove-large-packages: 'true'  # Frees ~3.1 GB
         # remove-swapfile: 'true'        # Frees ~4 GB
@@ -31,7 +31,7 @@ jobs:
     - name: Install deps
       run: |
         sudo apt update
-        sudo apt remove -y firefox snapd
+        sudo apt remove -y firefox
         sudo apt upgrade -y
         sudo apt install -y bc bison flex libssl-dev build-essential \
         ccache libncurses5-dev libncursesw5-dev python3 zstd repo git \
@@ -45,6 +45,7 @@ jobs:
         --fix-missing
 
     - name: Configure ccache
+      continue-on-error: true
       run: |
         mkdir -p ~/.ccache
         export CCACHE_DIR="~/.ccache"
@@ -57,12 +58,15 @@ jobs:
         echo "sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros" >> ~/.ccache/ccache.conf
 
     - name: Cache compilation
+      continue-on-error: true
+      if: always()
       uses: actions/cache@v4
       with:
         path: ~/.ccache
         key: ccache-${{ runner.os }}-${{ github.run_id }}
         restore-keys: |
           ccache-${{ runner.os }}-
+        save-always: true
 
     - name: Patch
       continue-on-error: true
