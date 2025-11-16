@@ -54,19 +54,15 @@ jobs:
         echo "max_size = 8G" >> ~/.ccache/ccache.conf
         echo "compression = true" >> ~/.ccache/ccache.conf
         echo "hash_dir = false" >> ~/.ccache/ccache.conf
-        echo "sloppiness = time_macros" >> ~/.ccache/ccache.conf
+        echo "sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros" >> ~/.ccache/ccache.conf
 
     - name: Cache compilation
       uses: actions/cache@v4
       with:
         path: ~/.ccache
-        key: ccache
+        key: ccache-${{ runner.os }}-${{ github.run_id }}
         restore-keys: |
-          ccache
-#        key: ccache-${{ runner.os }}-${{ hashFiles('**/*.c', '**/*.h', '**/Makefile') }}
-#        restore-keys: |
-#          ccache-${{ runner.os }}-
-
+          ccache-${{ runner.os }}-
 
     - name: Patch
       continue-on-error: true
