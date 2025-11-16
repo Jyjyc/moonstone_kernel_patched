@@ -61,7 +61,10 @@ jobs:
     - name: ccache
       run: |
         mkdir -p $HOME/.ccache
-        echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
+        export CCACHE_DIR="$HOME/.ccache"
+        echo "CCACHE_DIR=$CCACHE_DIR" >> $GITHUB_ENV
+        export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+        echo "PATH=$PATH" >> $GITHUB_ENV
 
     - name: Cache compilation
       uses: actions/cache@v4
@@ -84,6 +87,8 @@ jobs:
       run: |
         echo "List Neutron dir"
         ls -l $NEUTRON
+        echo "Dump GitHub env"
+        cat $GITHUB_ENV
         KERNEL_ROOT=$(pwd)
         echo "KERNEL_ROOT: $KERNEL_ROOT"
         echo "Setup SukiSU"
