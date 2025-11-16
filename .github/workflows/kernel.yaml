@@ -77,7 +77,7 @@ jobs:
         cd $KERNEL_REPO/KernelSU
         patch -p1 -F5 < twa_resume.patch
         #patch -p1 -F5 < 10_enable_susfs_for_ksu.patch
-        #cd $KERNEL_REPO
+        cd $KERNEL_REPO
         #patch -p1 -F5 < 50_add_susfs_in_kernel.patch
 
     - name: Configure env
