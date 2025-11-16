@@ -68,6 +68,8 @@ jobs:
         #git clone --branch kernel-5.4-jyc-test-1 --single-branch https://github.com/Jyjyc/susfs4ksu.git susfs
         git clone --branch gki-android12-5.10 --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs
         cd susfs
+        cd KernelSU
+        curl -LSs -o twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/susfs4ksu/refs/heads/kernel-5.4-jyc-test-1/kernel_patches/KernelSU/twa_resume.patch"
         cp ./kernel_patches/KernelSU/twa_resume.patch $KERNEL_REPO/KernelSU/twa_resume.patch
         #cat ./kernel_patches/KernelSU/10_enable_susfs_for_ksu/10_enable_susfs_for_ksu_00*.patch > $KERNEL_REPO/KernelSU/10_enable_susfs_for_ksu.patch
         #cat ./kernel_patches/50_add_susfs_in_kernel-5.4/50_add_susfs_in_kernel-5.4_00*.patch > $KERNEL_REPO/50_add_susfs_in_kernel.patch 
