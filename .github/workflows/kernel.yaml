@@ -52,7 +52,7 @@ jobs:
         cd neutron-clang
         curl -LO "https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman"
         chmod +x antman
-        ./antman -S
+        ./antman -S=latest --noconfirm --noprogress
         export PATH="($pwd)/bin:$PATH"
         echo "PATH=$PATH" >> $GITHUB_ENV
 
