@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-     - name: Maximize Build Space
+    - name: Maximize Build Space
        uses: AdityaGarg8/remove-unwanted-software@v5
        with:
          remove-dotnet: 'true'          # Frees ~2 GB
