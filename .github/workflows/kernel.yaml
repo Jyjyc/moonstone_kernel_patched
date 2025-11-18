@@ -120,7 +120,7 @@ jobs:
         echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
         echo "CFLAGS=\"-O3 --lto=thin\"" >> $GITHUB_ENV
         echo "CXXFLAGS=\"-O3 --lto=thin\"" >> $GITHUB_ENV
-        #echo "LDFLAGS=\"--lto=thin -fuse-ld=lld\"" >> $GITHUB_ENV
+      #  echo "LDFLAGS=\"--lto=thin -fuse-ld=lld\"" >> $GITHUB_ENV
         echo "LDFLAGS=\"-fuse-ld=lld\"" >> $GITHUB_ENV
         echo "LTO=thin" >> $GITHUB_ENV
         echo "LLVM=1" >> $GITHUB_ENV
