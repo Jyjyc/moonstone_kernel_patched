@@ -21,7 +21,7 @@ jobs:
         remove-large-packages: 'true'  # Frees ~3.1 GB
         remove-swapfile: 'false'        # Frees ~4 GB
         remove-cached-tools: 'false'   # Avoid unless confirmed safe
-        verbose: 'true'                # Enable detailed logging
+        verbose: 'false'                # Enable detailed logging
  
     - name: Checkout
       uses: actions/checkout@v4
@@ -32,6 +32,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt remove -y firefox
+        sudo apt-mark hold linux-*
         sudo apt upgrade -y
         sudo apt install -y bc bison flex libssl-dev build-essential \
         ccache libncurses5-dev libncursesw5-dev python3 zstd repo git \
@@ -94,10 +95,10 @@ jobs:
         #patch -p1 -F5 < 50_add_susfs_in_kernel.patch
         echo "Apply custom patches"
         cat ./patch/*.patch > $KERNEL_ROOT/custom.patch
-        patch -p1 -F5 < $KERNEL_ROOT/custom.patch
+        #patch -p1 -F5 < $KERNEL_ROOT/custom.patch
         cd $KERNEL_ROOT/KernelSU
         echo "Apply TWA_RESUME patch"
-        patch -p1 -F5 < twa_resume.patch
+        #patch -p1 -F5 < twa_resume.patch
 
     - name: Configure env
       run: |
