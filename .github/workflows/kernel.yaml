@@ -116,17 +116,6 @@ jobs:
         echo "OBJCOPY=llvm-objcopy" >> $GITHUB_ENV
         echo "OBJDUMP=llvm-objdump" >> $GITHUB_ENV
         echo "READELF=llvm-readelf" >> $GITHUB_ENV
-        echo "HOSTCC=ccache clang" >> $GITHUB_ENV
-        echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
-        echo "CFLAGS=\"-O3 --lto=thin\"" >> $GITHUB_ENV
-        echo "CXXFLAGS=\"-O3 --lto=thin\"" >> $GITHUB_ENV
-        echo "LDFLAGS=\"--lto=thin -fuse-ld=lld\"" >> $GITHUB_ENV
-        echo "LDFLAGS=\"-fuse-ld=lld\"" >> $GITHUB_ENV
-        echo "LTO=thin" >> $GITHUB_ENV
-        echo "LLVM=1" >> $GITHUB_ENV
-        echo "LLVM_IAS=1" >> $GITHUB_ENV
-        echo "KBUILD_BUILD_USER=github" >> $GITHUB_ENV
-        echo "KBUILD_BUILD_HOST=actions" >> $GITHUB_ENV
 
     - name: Defconfig
       run: |
