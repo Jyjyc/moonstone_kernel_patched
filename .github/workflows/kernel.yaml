@@ -118,6 +118,9 @@ jobs:
         echo "READELF=llvm-readelf" >> $GITHUB_ENV
         echo "HOSTCC=ccache clang" >> $GITHUB_ENV
         echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
+        echo "LTO=thin" >> $GITHUB_ENV
+        echo "LLVM=1" >> $GITHUB_ENV
+        echo "LLVM_IAS=1" >> $GITHUB_ENV
 
     - name: Defconfig
       run: |
