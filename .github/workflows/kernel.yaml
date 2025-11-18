@@ -116,6 +116,8 @@ jobs:
         echo "OBJCOPY=llvm-objcopy" >> $GITHUB_ENV
         echo "OBJDUMP=llvm-objdump" >> $GITHUB_ENV
         echo "READELF=llvm-readelf" >> $GITHUB_ENV
+        echo "HOSTCC=ccache clang" >> $GITHUB_ENV
+        echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
 
     - name: Defconfig
       run: |
