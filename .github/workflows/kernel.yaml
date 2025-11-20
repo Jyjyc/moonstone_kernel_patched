@@ -46,25 +46,25 @@ jobs:
         x11proto-core-dev unzip fontconfig lib32z1-dev \
         --fix-missing
 
+
     - name: Configure ccache
-      continue-on-error: true
       run: |
-        mkdir -p ~/.ccache
-        export CCACHE_DIR="~/.ccache"
+        export CCACHE_DIR="$HOME/.ccache"
+        mkdir -p $CCACHE_DIR
+        touch $CCACHE_DIR/ccache.conf
         echo "CCACHE_DIR=$CCACHE_DIR" >> $GITHUB_ENV
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
         echo "PATH=$PATH" >> $GITHUB_ENV
-        echo "max_size = 8G" >> ~/.ccache/ccache.conf
-        echo "compression = true" >> ~/.ccache/ccache.conf
-        echo "hash_dir = false" >> ~/.ccache/ccache.conf
-        echo "sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros" >> ~/.ccache/ccache.conf
+        echo "max_size = 8G" >> $CCACHE_DIR/ccache.conf
+        echo "compression = true" >> $CCACHE_DIR/ccache.conf
+        echo "hash_dir = false" >> $CCACHE_DIR/ccache.conf
+        echo "sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros" >> $CCACHE_DIR/ccache.conf
 
     - name: Cache compilation
       continue-on-error: true
-      if: always()
       uses: actions/cache@v4
       with:
-        path: ~/.ccache
+        path: $CCACHE_DIR
         key: ccache-${{ runner.os }}-${{ github.run_id }}
         restore-keys: |
           ccache-${{ runner.os }}-
@@ -84,9 +84,9 @@ jobs:
         cd susfs/kernel_patches
         echo "Get TWA_RESUME patch"
         #curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/susfs4ksu/refs/heads/kernel-5.4-jyc-test-1/kernel_patches/KernelSU/twa_resume.patch"
-        curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/susfs4ksu/8135e9b93719606732977e56817dc6006be44f7e/kernel_patches/KernelSU/twa_resume.patch"
+        #curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/susfs4ksu/8135e9b93719606732977e56817dc6006be44f7e/kernel_patches/KernelSU/twa_resume.patch"
         echo "Copy patches"
-        cp ./KernelSU/twa_resume.patch $KERNEL_ROOT/KernelSU/twa_resume.patch
+        #cp ./KernelSU/twa_resume.patch $KERNEL_ROOT/KernelSU/twa_resume.patch
         #cat ./KernelSU/10_enable_susfs_for_ksu/10_enable_susfs_for_ksu_00*.patch > $KERNEL_ROOT/KernelSU/10_enable_susfs_for_ksu.patch
         #cat ./50_add_susfs_in_kernel-5.4/50_add_susfs_in_kernel-5.4_00*.patch > $KERNEL_ROOT/50_add_susfs_in_kernel.patch 
         cp ./fs/* $KERNEL_ROOT/fs/
@@ -96,10 +96,10 @@ jobs:
         cd $KERNEL_ROOT
         #patch -p1 -F5 < 50_add_susfs_in_kernel.patch
         echo "Apply custom patches"
-        cat ./patch/*.patch > $KERNEL_ROOT/custom.patch
-        patch -p1 -F5 < $KERNEL_ROOT/custom.patch
-        cd $KERNEL_ROOT/KernelSU
-        echo "Apply TWA_RESUME patch"
+        cat ./patch/*.patch > custom.patch
+        patch -p1 -F5 < custom.patch
+        #cd $KERNEL_ROOT/KernelSU
+        #echo "Apply TWA_RESUME patch"
         #patch -p1 -F5 < twa_resume.patch
 
     - name: Configure env
@@ -144,7 +144,7 @@ jobs:
           --enable CONFIG_KALLSYMS_ALL \
           --enable CONFIG_KPROBES \
           --enable CONFIG_KRETPROBES 
-         # --enable CONFIG_SUSFS4KSU 
+          --enable CONFIG_SUSFS4KSU 
         make -j$(nproc) O=out olddefconfig
   
     - name: Collect .rej files
