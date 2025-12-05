@@ -47,13 +47,15 @@ jobs:
         python3-markdown libxml2-utils xsltproc libc6-dev libtinfo6 cpio kmod \
         openssl libelf-dev pahole libarchive-tools rsync ssh git-core \
         x11proto-core-dev unzip \
-        --fix-missing > /dev/null 2>&1
-        sudo apt install -y lld clang-tools llvm-dev --fix-missing > /dev/null 2>&1
-        #sudo apt install -y gcc-aarch64-linux-gnu binutils-gold mold --fix-missing
+        --fix-missing
+        sudo apt install -y lld clang-tools llvm-dev --fix-missing
+        #sudo apt install -y binutils-gold --fix-missing
+        sudo apt install -y mold --fix-missing
+        #sudo apt install -y gcc-aarch64-linux-gnu --fix-missing
         echo "Apt packages install completed"
 
     - name: Configure ccache
-      #if: false
+      if: false
       run: |
         export CCACHE_DIR="$HOME/.ccache"
         mkdir -p $CCACHE_DIR
@@ -67,7 +69,7 @@ jobs:
         echo "sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros" >> $CCACHE_DIR/ccache.conf
 
     - name: Cache compilation
-      #if: false
+      if: false
       continue-on-error: true
       uses: actions/cache@v4
       with:
@@ -92,11 +94,11 @@ jobs:
         git clone --branch gki-android12-5.10 --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs
         #git clone --branch kernel-5.4 --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs
         cd susfs/kernel_patches
-        #echo "Get TWA_RESUME patch"
+        echo "Get TWA_RESUME patch"
         #curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/susfs4ksu/refs/heads/kernel-5.4-jyc-test-1/kernel_patches/KernelSU/twa_resume.patch"
-        #curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/susfs4ksu/8135e9b93719606732977e56817dc6006be44f7e/kernel_patches/KernelSU/twa_resume.patch"
+        curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/susfs4ksu/8135e9b93719606732977e56817dc6006be44f7e/kernel_patches/KernelSU/twa_resume.patch"
         echo "Copy patches"
-        #cp -v ./KernelSU/twa_resume.patch $KERNEL_ROOT/KernelSU/twa_resume.patch
+        cp -v ./KernelSU/twa_resume.patch $KERNEL_ROOT/KernelSU/twa_resume.patch
         #cat ./KernelSU/10_enable_susfs_for_ksu/10_enable_susfs_for_ksu_00*.patch > $KERNEL_ROOT/KernelSU/10_enable_susfs_for_ksu.patch
         #cat ./50_add_susfs_in_kernel-5.4/50_add_susfs_in_kernel-5.4_00*.patch > $KERNEL_ROOT/50_add_susfs_in_kernel.patch
         #cp -v ./KernelSU/10_enable_susfs_for_ksu.patch $KERNEL_ROOT/KernelSU/10_enable_susfs_for_ksu.patch
@@ -112,9 +114,9 @@ jobs:
         #echo "Apply custom patches"
         #cat ./patch/*.patch > custom.patch
         #patch -p1 < custom.patch
-        #cd $KERNEL_ROOT/KernelSU
-        #echo "Apply TWA_RESUME patch"
-        #patch -p1 < twa_resume.patch
+        cd $KERNEL_ROOT/KernelSU
+        echo "Apply TWA_RESUME patch"
+        patch -p1 < twa_resume.patch
 
     - name: Configure env
       run: |
@@ -125,10 +127,11 @@ jobs:
         #gcc triplet
         #echo "CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
         echo "CLANG_TRIPLE=aarch64-linux-gnu-" >> $GITHUB_ENV
-        echo "CC=ccache clang" >> $GITHUB_ENV
-        echo "CXX=ccache clang++" >> $GITHUB_ENV
-        #echo "CC=clang" >> $GITHUB_ENV
-        #echo "CXX=clang++" >> $GITHUB_ENV
+        #echo "CC=ccache clang" >> $GITHUB_ENV
+        #echo "CXX=ccache clang++" >> $GITHUB_ENV
+        echo "CC=clang" >> $GITHUB_ENV
+        echo "CXX=clang++" >> $GITHUB_ENV
+        echo "CPP=clang-cpp" >> $GITHUB_ENV
         echo "AR=llvm-ar" >> $GITHUB_ENV
         echo "NM=llvm-nm" >> $GITHUB_ENV
         echo "LD=ld.lld" >> $GITHUB_ENV
@@ -136,28 +139,31 @@ jobs:
         echo "STRIP=llvm-strip" >> $GITHUB_ENV
         echo "OBJCOPY=llvm-objcopy" >> $GITHUB_ENV
         echo "OBJDUMP=llvm-objdump" >> $GITHUB_ENV
+        echo "RANLIB=llvm-ranlib" >> $GITHUB_ENV
         echo "READELF=llvm-readelf" >> $GITHUB_ENV
-        echo "HOSTCC=ccache clang" >> $GITHUB_ENV
-        echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
-        #echo "HOSTCC=clang" >> $GITHUB_ENV
-        #echo "HOSTCXX=clang++" >> $GITHUB_ENV
+        #echo "HOSTCC=ccache clang" >> $GITHUB_ENV
+        #echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
+        echo "HOSTCC=clang" >> $GITHUB_ENV
+        echo "HOSTCXX=clang++" >> $GITHUB_ENV
         echo "CFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
         #echo "CFLAGS=\"-O3\"" >> $GITHUB_ENV
         echo "CXXFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
         #echo "CXXFLAGS=\"-O3\"" >> $GITHUB_ENV
         #echo "LDFLAGS=-flto=thin -fuse-ld=lld" >> $GITHUB_ENV
         #echo "LDFLAGS=-fuse-ld=lld" >> $GITHUB_ENV
-        echo "LDFLAGS=\"-flto=thin\"" >> $GITHUB_ENV
+        #echo "LDFLAGS=\"-flto=thin\"" >> $GITHUB_ENV
         #echo "LDFLAGS=-fuse-ld=gold" >> $GITHUB_ENV
-        echo "LTO=thin" >> $GITHUB_ENV
+        #echo "LTO=thin" >> $GITHUB_ENV
+        #echo "LTO=off" >> $GITHUB_ENV
         echo "LLVM=1" >> $GITHUB_ENV
         echo "LLVM_IAS=1" >> $GITHUB_ENV
         echo "KBUILD_BUILD_USER=github" >> $GITHUB_ENV
         echo "KBUILD_BUILD_HOST=actions" >> $GITHUB_ENV
-        echo "LLVM_ENABLE_PROJECTS=clang;polly;lld" >> $GITHUB_ENV
+        #echo "LLVM_ENABLE_PROJECTS=clang;polly;lld" >> $GITHUB_ENV
+        echo "LLVM_ENABLE_PROJECTS=clang;lld" >> $GITHUB_ENV
         #echo "LLVM_ENABLE_PROJECTS=clang" >> $GITHUB_ENV
-        echo "WITH_POLLY=on" >> $GITHUB_ENV
-        #echo "WITH_POLLY=off" >> $GITHUB_ENV
+        #echo "WITH_POLLY=on" >> $GITHUB_ENV
+        echo "WITH_POLLY=off" >> $GITHUB_ENV
         echo "LLVM_USE_LINKER=lld" >> $GITHUB_ENV
         echo "LLVM_ENABLE_LLD=on" >> $GITHUB_ENV
         #echo "LLVM_ENABLE_LLD=off" >> $GITHUB_ENV
