@@ -2,7 +2,7 @@ menu "APatch Support"
 
 config APATCH_SUPPORT
     bool "Enable Basic APatch support"
-    default y
+    default n
     select DEBUG_KERNEL
     select KALLSYMS
     select KALLSYMS_ALL
