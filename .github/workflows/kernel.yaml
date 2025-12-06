@@ -1,0 +1,216 @@
+name: Build Android Kernel (moonstone)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ sukisu-test-2 ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Maximize Build Space
+      if: false
+      uses: AdityaGarg8/remove-unwanted-software@v5
+      with:
+        remove-dotnet: 'true'          # Frees ~2 GB
+        remove-android: 'true'         # Frees ~9 GB
+        remove-haskell: 'true'         # Frees ~5.2 GB
+        remove-codeql: 'true'          # Frees ~5.4 GB
+        remove-docker-images: 'true'   # Frees ~3.2 GB
+        remove-large-packages: 'true'  # Frees ~3.1 GB
+        remove-swapfile: 'false'        # Frees ~4 GB
+        remove-cached-tools: 'false'   # Avoid unless confirmed safe
+        verbose: 'false'                # Enable detailed logging
+ 
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install deps
+      run: |
+        sudo apt update > /dev/null 2>&1
+        sudo apt remove -y firefox > /dev/null 2>&1
+        echo "Apt update and Firefox uninstall completed"
+        sudo apt-mark hold linux-* > /dev/null 2>&1
+        echo "Apt hold successful"
+        sudo apt upgrade -y > /dev/null 2>&1
+        echo "Upgrade completed"
+        sudo apt install -y bc bison flex libssl-dev build-essential \
+        ccache libncurses5-dev libncursesw5-dev python3 zstd repo git \
+        git-lfs device-tree-compiler lz4 xz-utils fontconfig lib32z1-dev \
+        zlib1g-dev python-is-python3 p7zip-full android-sdk-libsparse-utils \
+        erofs-utils default-jdk gnupg gperf zip curl libncurses-dev libx11-dev \
+        libreadline-dev libgl1 libgl1-mesa-dev make sudo bc grep tofrodos \
+        python3-markdown libxml2-utils xsltproc libc6-dev libtinfo6 cpio kmod \
+        openssl libelf-dev pahole libarchive-tools rsync ssh git-core \
+        x11proto-core-dev unzip \
+        --fix-missing
+        sudo apt install -y lld clang-tools llvm-dev --fix-missing
+        #sudo apt install -y binutils-gold --fix-missing
+        sudo apt install -y mold --fix-missing
+        #sudo apt install -y gcc-aarch64-linux-gnu --fix-missing
+        echo "Apt packages install completed"
+
+    - name: Configure ccache
+      if: false
+      run: |
+        export CCACHE_DIR="$HOME/.ccache"
+        mkdir -p $CCACHE_DIR
+        touch $CCACHE_DIR/ccache.conf
+        echo "CCACHE_DIR=$CCACHE_DIR" >> $GITHUB_ENV
+        export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+        echo "PATH=$PATH" >> $GITHUB_ENV
+        echo "max_size = 8G" >> $CCACHE_DIR/ccache.conf
+        echo "compression = true" >> $CCACHE_DIR/ccache.conf
+        echo "hash_dir = false" >> $CCACHE_DIR/ccache.conf
+        echo "sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros" >> $CCACHE_DIR/ccache.conf
+
+    - name: Cache compilation
+      if: false
+      continue-on-error: true
+      uses: actions/cache@v4
+      with:
+        path: $HOME/.ccache
+        key: ccache-${{ runner.os }}-${{ github.run_id }}
+        restore-keys: |
+          ccache-${{ runner.os }}-
+        save-always: true
+        enableCrossOsArchive: true
+
+    - name: Patch
+      continue-on-error: true
+      run: |
+        KERNEL_ROOT=$(pwd)
+        echo "KERNEL_ROOT: $KERNEL_ROOT"
+        #echo "Setup SukiSU"
+        #curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s nongki
+        echo "Setup RKSU"
+        curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s susfs-rksu-master
+        echo "Get susfs"
+        #git clone --branch kernel-5.4-jyc-test-1 --single-branch https://github.com/Jyjyc/susfs4ksu.git susfs
+        git clone --branch gki-android12-5.10 --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs
+        #git clone --branch kernel-5.4 --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs
+        cd susfs/kernel_patches
+        echo "Get TWA_RESUME patch"
+        #curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/susfs4ksu/refs/heads/kernel-5.4-jyc-test-1/kernel_patches/KernelSU/twa_resume.patch"
+        curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/susfs4ksu/8135e9b93719606732977e56817dc6006be44f7e/kernel_patches/KernelSU/twa_resume.patch"
+        echo "Copy patches"
+        cp -v ./KernelSU/twa_resume.patch $KERNEL_ROOT/KernelSU/twa_resume.patch
+        #cat ./KernelSU/10_enable_susfs_for_ksu/10_enable_susfs_for_ksu_00*.patch > $KERNEL_ROOT/KernelSU/10_enable_susfs_for_ksu.patch
+        #cat ./50_add_susfs_in_kernel-5.4/50_add_susfs_in_kernel-5.4_00*.patch > $KERNEL_ROOT/50_add_susfs_in_kernel.patch
+        #cp -v ./KernelSU/10_enable_susfs_for_ksu.patch $KERNEL_ROOT/KernelSU/10_enable_susfs_for_ksu.patch
+        #cp -v ./50_add_susfs_in_gki-android12-5.10.patch $KERNEL_ROOT/50_add_susfs_in_kernel.patch
+        #cp -v ./50_add_susfs_in_kernel-5.4.patch $KERNEL_ROOT/50_add_susfs_in_kernel.patch
+        cp -v ./fs/* $KERNEL_ROOT/fs/
+        cp -v ./include/linux/* $KERNEL_ROOT/include/linux/
+        #echo "Apply susfs patches"
+        #cd $KERNEL_ROOT/KernelSU
+        #patch -p1 < 10_enable_susfs_for_ksu.patch
+        #cd $KERNEL_ROOT
+        #patch -p1 < 50_add_susfs_in_kernel.patch
+        #echo "Apply custom patches"
+        #cat ./patch/*.patch > custom.patch
+        #patch -p1 < custom.patch
+        cd $KERNEL_ROOT/KernelSU
+        echo "Apply TWA_RESUME patch"
+        patch -p1 < twa_resume.patch
+
+    - name: Configure env
+      run: |
+        echo "ARCH=arm64" >> $GITHUB_ENV
+        echo "SUBARCH=arm64" >> $GITHUB_ENV
+        #clang triplet
+        echo "CROSS_COMPILE=aarch64-none-linux-gnu-" >> $GITHUB_ENV
+        #gcc triplet
+        #echo "CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
+        echo "CLANG_TRIPLE=aarch64-linux-gnu-" >> $GITHUB_ENV
+        #echo "CC=ccache clang" >> $GITHUB_ENV
+        #echo "CXX=ccache clang++" >> $GITHUB_ENV
+        echo "CC=clang" >> $GITHUB_ENV
+        echo "CXX=clang++" >> $GITHUB_ENV
+        echo "CPP=clang-cpp" >> $GITHUB_ENV
+        echo "AR=llvm-ar" >> $GITHUB_ENV
+        echo "NM=llvm-nm" >> $GITHUB_ENV
+        echo "LD=ld.lld" >> $GITHUB_ENV
+        #echo "LD=ld.mold" >> $GITHUB_ENV
+        echo "STRIP=llvm-strip" >> $GITHUB_ENV
+        echo "OBJCOPY=llvm-objcopy" >> $GITHUB_ENV
+        echo "OBJDUMP=llvm-objdump" >> $GITHUB_ENV
+        echo "RANLIB=llvm-ranlib" >> $GITHUB_ENV
+        echo "READELF=llvm-readelf" >> $GITHUB_ENV
+        #echo "HOSTCC=ccache clang" >> $GITHUB_ENV
+        #echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
+        echo "HOSTCC=clang" >> $GITHUB_ENV
+        echo "HOSTCXX=clang++" >> $GITHUB_ENV
+        #echo "CFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
+        echo "CFLAGS=\"-O3\"" >> $GITHUB_ENV
+        #echo "CXXFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
+        echo "CXXFLAGS=\"-O3\"" >> $GITHUB_ENV
+        #echo "LDFLAGS=-flto=thin -fuse-ld=lld" >> $GITHUB_ENV
+        #echo "LDFLAGS=-fuse-ld=lld" >> $GITHUB_ENV
+        #echo "LDFLAGS=\"-flto=thin\"" >> $GITHUB_ENV
+        #echo "LDFLAGS=-fuse-ld=gold" >> $GITHUB_ENV
+        #echo "LTO=thin" >> $GITHUB_ENV
+        #echo "LTO=off" >> $GITHUB_ENV
+        echo "LLVM=1" >> $GITHUB_ENV
+        echo "LLVM_IAS=1" >> $GITHUB_ENV
+        echo "KBUILD_BUILD_USER=github" >> $GITHUB_ENV
+        echo "KBUILD_BUILD_HOST=actions" >> $GITHUB_ENV
+        #echo "LLVM_ENABLE_PROJECTS=clang;polly;lld" >> $GITHUB_ENV
+        echo "LLVM_ENABLE_PROJECTS=clang;lld" >> $GITHUB_ENV
+        #echo "LLVM_ENABLE_PROJECTS=clang" >> $GITHUB_ENV
+        #echo "WITH_POLLY=on" >> $GITHUB_ENV
+        echo "WITH_POLLY=off" >> $GITHUB_ENV
+        echo "LLVM_USE_LINKER=lld" >> $GITHUB_ENV
+        echo "LLVM_ENABLE_LLD=on" >> $GITHUB_ENV
+        #echo "LLVM_ENABLE_LLD=off" >> $GITHUB_ENV
+        echo "LLVM_HOST_TRIPLE=aarch64-linux-gnu" >> $GITHUB_ENV
+        echo "LLVM_DEFAULT_TARGET_TRIPLE=aarch64-linux-gnu" >> $GITHUB_ENV
+        echo "LLVM_TARGETS_TO_BUILD=aarch64" >> $GITHUB_ENV
+
+    - name: Defconfig
+      run: |
+        make -j$(nproc) O=out stone_defconfig
+
+    - name: Apply local config tweaks (optional)
+      run: |
+        ./scripts/config --file out/.config \
+          --enable CONFIG_KPROBES \
+          --enable CONFIG_KRETPROBES
+        #./scripts/config --file out/.config \
+          #--enable CONFIG_KALLSYMS_ALL
+          #--enable CONFIG_SUSFS4KSU
+        #sort -u out/.config --output=out/.config
+        make -j$(nproc) O=out olddefconfig
+  
+    - name: Collect .rej files
+      if: always()
+      continue-on-error: true
+      run: |
+        mkdir -p rejects
+        find . -name "*.rej" | zip -@ rejects/rejects.zip
+
+    - name: Upload patch rejects
+      if: always()
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      with:
+        name: patch-rejects
+        path: rejects/
+
+    - name: Build kernel
+      run: |
+        make -j$(nproc) O=out
+
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: kernel-out
+        path: |
+          out/arch/arm64/boot/Image*
+          out/arch/arm64/boot/dts/**/*.dtb
+          out/arch/arm64/boot/dtbo.img
+          
