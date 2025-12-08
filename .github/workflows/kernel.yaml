@@ -86,12 +86,12 @@ jobs:
         KERNEL_ROOT=$(pwd)
         echo "KERNEL_ROOT: $KERNEL_ROOT"
         #echo "Setup SukiSU"
-        #curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s nongki
+        curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s nongki
         #curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main
         #curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-test
         #echo "Setup RKSU"
         #curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s main
-        curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s susfs-rksu-master
+        #curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s susfs-rksu-master
         #curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s deprecated/susfs-main
         #curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s deprecated/susfs-legacy
         #echo "Get susfs"
@@ -100,8 +100,8 @@ jobs:
         #git clone --branch kernel-5.4 --single-branch https://github.com/Jyjyc/susfs4ksu_mirror.git susfs
         cd susfs/kernel_patches
         #echo "Get TWA_RESUME patch"
-        curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/twa_resume.patch"
-        #curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/twa_resume_mod.patch"
+        curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/refs/heads/main/twa_resume.patch"
+        #curl -LSs -o ./KernelSU/twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/refs/heads/main/twa_resume_mod.patch"
         echo "Copy patches"
         cp -v ./KernelSU/twa_resume.patch $KERNEL_ROOT/KernelSU/twa_resume.patch
         #cat ./KernelSU/10_enable_susfs_for_ksu/10_enable_susfs_for_ksu_00*.patch > $KERNEL_ROOT/KernelSU/10_enable_susfs_for_ksu.patch
