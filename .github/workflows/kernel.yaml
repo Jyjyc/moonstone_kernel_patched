@@ -127,10 +127,10 @@ jobs:
         #gcc triplet
         #echo "CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
         echo "CLANG_TRIPLE=aarch64-linux-gnu-" >> $GITHUB_ENV
-        #echo "CC=ccache clang" >> $GITHUB_ENV
-        #echo "CXX=ccache clang++" >> $GITHUB_ENV
-        echo "CC=clang" >> $GITHUB_ENV
-        echo "CXX=clang++" >> $GITHUB_ENV
+        echo "CC=ccache clang" >> $GITHUB_ENV
+        echo "CXX=ccache clang++" >> $GITHUB_ENV
+        #echo "CC=clang" >> $GITHUB_ENV
+        #echo "CXX=clang++" >> $GITHUB_ENV
         echo "CPP=clang-cpp" >> $GITHUB_ENV
         echo "AR=llvm-ar" >> $GITHUB_ENV
         echo "NM=llvm-nm" >> $GITHUB_ENV
@@ -141,10 +141,10 @@ jobs:
         echo "OBJDUMP=llvm-objdump" >> $GITHUB_ENV
         echo "RANLIB=llvm-ranlib" >> $GITHUB_ENV
         echo "READELF=llvm-readelf" >> $GITHUB_ENV
-        #echo "HOSTCC=ccache clang" >> $GITHUB_ENV
-        #echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
-        echo "HOSTCC=clang" >> $GITHUB_ENV
-        echo "HOSTCXX=clang++" >> $GITHUB_ENV
+        echo "HOSTCC=ccache clang" >> $GITHUB_ENV
+        echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
+        #echo "HOSTCC=clang" >> $GITHUB_ENV
+        #echo "HOSTCXX=clang++" >> $GITHUB_ENV
         #echo "CFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
         echo "CFLAGS=\"-O3\"" >> $GITHUB_ENV
         #echo "CXXFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
