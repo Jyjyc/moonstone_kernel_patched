@@ -97,8 +97,8 @@ jobs:
         git clone --branch gki-android12-5.10 --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs
         #git clone --branch kernel-5.4 --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs
         echo "Get TWA_RESUME patch"
-        curl -LSs -o twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/refs/heads/main/twa_resume.patch"
-        #curl -LSs -o twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/refs/heads/main/twa_resume_mod.patch"
+        #curl -LSs -o twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/refs/heads/main/twa_resume.patch"
+        curl -LSs -o twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/refs/heads/main/twa_resume_mod.patch"
         echo "Copy patches"
         cp -v twa_resume.patch $KERNEL_ROOT/KernelSU/twa_resume.patch
         cd susfs/kernel_patches
