@@ -86,10 +86,10 @@ jobs:
         KERNEL_ROOT=$(pwd)
         KERNEL_REPO=$KERNEL_ROOT
         echo "KERNEL_ROOT: $KERNEL_ROOT"
-        echo "Setup SukiSU"
-        curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s main
+        #echo "Setup SukiSU"
+        #curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s main
         echo "Custom SukiSU"
-        curl -LSs "https://raw.githubusercontent.com/Jyjyc/SukiSU-Ultra/main/kernel/setup.sh" | bash -s builtin-jyc
+        curl -LSs "https://raw.githubusercontent.com/Jyjyc/SukiSU-Ultra/builtin-jyc/kernel/setup.sh" | bash -s builtin-jyc
         #echo "Setup RKSU"
         #curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s susfs-rksu-master
         echo "Get susfs"
@@ -187,7 +187,7 @@ jobs:
         ./scripts/config --file out/.config \
           --enable CONFIG_KALLSYMS_ALL
         ./scripts/config --file out/.config \
-          --enable CONFIG_SUSFS4KSU
+          --disable CONFIG_SUSFS4KSU
         #sort -u out/.config --output=out/.config
         make -j$(nproc) O=out olddefconfig
   
