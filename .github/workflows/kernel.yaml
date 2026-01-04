@@ -3,7 +3,7 @@ name: Build Android Kernel (moonstone)
 on:
   workflow_dispatch:
   push:
-    branches: [ jyjyc-mods, jyjyc-mods-test-1 ]
+    branches: [ jyjyc-mods, jyjyc-mods-test-1, mods-asdf ]
 
 jobs:
   build:
