@@ -187,7 +187,7 @@ jobs:
         ./scripts/config --file out/.config \
           --enable CONFIG_KALLSYMS_ALL
         ./scripts/config --file out/.config \
-          --enable CONFIG_SUSFS4KSU
+          --disable CONFIG_SUSFS4KSU
         #sort -u out/.config --output=out/.config
         make -j$(nproc) O=out olddefconfig
   
