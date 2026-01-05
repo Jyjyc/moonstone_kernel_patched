@@ -96,20 +96,22 @@ jobs:
         #git clone --branch kernel-5.4-jyc-test-1 --single-branch https://github.com/Jyjyc/susfs4ksu.git susfs
         git clone --branch gki-android12-5.10 --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs
         #git clone --branch kernel-5.4 --single-branch https://gitlab.com/simonpunk/susfs4ksu.git susfs
-        echo "Get TWA_RESUME patch"
-        #curl -LSs -o twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/refs/heads/main/twa_resume.patch"
-        curl -LSs -o twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/refs/heads/main/twa_resume_mod.patch"
-        echo "Copy patches"
-        cp -v twa_resume.patch $KERNEL_ROOT/KernelSU/twa_resume.patch
+        echo "Copy susfs sources"
         cd susfs/kernel_patches
+        cp -v ./fs/* $KERNEL_ROOT/fs/
+        cp -v ./include/linux/* $KERNEL_ROOT/include/linux/
+        #echo "Copy susfs patches"
         #cat ./KernelSU/10_enable_susfs_for_ksu/10_enable_susfs_for_ksu_00*.patch > $KERNEL_ROOT/KernelSU/10_enable_susfs_for_ksu.patch
         #cat ./50_add_susfs_in_kernel-5.4/50_add_susfs_in_kernel-5.4_00*.patch > $KERNEL_ROOT/50_add_susfs_in_kernel.patch
         #cp -v ./KernelSU/10_enable_susfs_for_ksu.patch $KERNEL_ROOT/KernelSU/10_enable_susfs_for_ksu.patch
         #cp -v ./50_add_susfs_in_gki-android12-5.10.patch $KERNEL_ROOT/50_add_susfs_in_kernel.patch
         #cp -v ./50_add_susfs_in_kernel-5.4.patch $KERNEL_ROOT/50_add_susfs_in_kernel.patch
-        echo "Copy susfs sources"
-        cp -v ./fs/* $KERNEL_ROOT/fs/
-        cp -v ./include/linux/* $KERNEL_ROOT/include/linux/
+        #echo "Get TWA_RESUME patch"
+        #cd $KERNEL_ROOT/KernelSU
+        #curl -LSs -o twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/refs/heads/main/twa_resume.patch"
+        #curl -LSs -o twa_resume.patch "https://raw.githubusercontent.com/Jyjyc/workspace-files/refs/heads/main/twa_resume_mod.patch"
+        #echo "Apply TWA_RESUME patch"
+        #patch -p1 < twa_resume.patch
         #echo "Apply susfs patches"
         #cd $KERNEL_ROOT/KernelSU
         #patch -p1 < 10_enable_susfs_for_ksu.patch
@@ -118,9 +120,6 @@ jobs:
         #echo "Apply custom patches"
         #cat ./patch/*.patch > custom.patch
         #patch -p1 < custom.patch
-        cd $KERNEL_ROOT/KernelSU
-        echo "Apply TWA_RESUME patch"
-        patch -p1 < twa_resume.patch
 
     - name: Configure env
       run: |
@@ -181,13 +180,13 @@ jobs:
 
     - name: Apply local config tweaks (optional)
       run: |
-        ./scripts/config --file out/.config \
-          --enable CONFIG_KPROBES \
-          --enable CONFIG_KRETPROBES
-        ./scripts/config --file out/.config \
-          --enable CONFIG_KALLSYMS_ALL
-        ./scripts/config --file out/.config \
-          --enable CONFIG_SUSFS4KSU
+        #./scripts/config --file out/.config \
+          #--enable CONFIG_KPROBES \
+          #--enable CONFIG_KRETPROBES
+        #./scripts/config --file out/.config \
+          #--enable CONFIG_KALLSYMS_ALL
+        #./scripts/config --file out/.config \
+          #--enable CONFIG_SUSFS4KSU
         #sort -u out/.config --output=out/.config
         make -j$(nproc) O=out olddefconfig
   
