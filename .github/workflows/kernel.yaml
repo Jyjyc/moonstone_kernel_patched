@@ -29,6 +29,65 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Configure env
+      run: |
+        echo "ARCH=arm64" >> $GITHUB_ENV
+        echo "SUBARCH=arm64" >> $GITHUB_ENV
+        #clang triplet
+        echo "CROSS_COMPILE=aarch64-none-linux-gnu-" >> $GITHUB_ENV
+        #gcc triplet
+        #echo "CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
+        echo "CLANG_TRIPLE=aarch64-linux-gnu-" >> $GITHUB_ENV
+        echo "CC=ccache clang" >> $GITHUB_ENV
+        echo "CXX=ccache clang++" >> $GITHUB_ENV
+        #echo "CC=clang" >> $GITHUB_ENV
+        #echo "CXX=clang++" >> $GITHUB_ENV
+        echo "CPP=clang-cpp" >> $GITHUB_ENV
+        echo "AR=llvm-ar" >> $GITHUB_ENV
+        echo "NM=llvm-nm" >> $GITHUB_ENV
+        echo "LD=ld.lld" >> $GITHUB_ENV
+        #echo "LD=ld.mold" >> $GITHUB_ENV
+        echo "STRIP=llvm-strip" >> $GITHUB_ENV
+        echo "OBJCOPY=llvm-objcopy" >> $GITHUB_ENV
+        echo "OBJDUMP=llvm-objdump" >> $GITHUB_ENV
+        echo "RANLIB=llvm-ranlib" >> $GITHUB_ENV
+        echo "READELF=llvm-readelf" >> $GITHUB_ENV
+        echo "HOSTCC=ccache clang" >> $GITHUB_ENV
+        echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
+        #echo "HOSTCC=clang" >> $GITHUB_ENV
+        #echo "HOSTCXX=clang++" >> $GITHUB_ENV
+        echo "CFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
+        #echo "CFLAGS=\"-O3\"" >> $GITHUB_ENV
+        echo "CXXFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
+        #echo "CXXFLAGS=\"-O3\"" >> $GITHUB_ENV
+        #echo "LDFLAGS=-flto=thin -fuse-ld=lld" >> $GITHUB_ENV
+        #echo "LDFLAGS=-fuse-ld=lld" >> $GITHUB_ENV
+        echo "LDFLAGS=\"-flto=thin\"" >> $GITHUB_ENV
+        #echo "LDFLAGS=-fuse-ld=gold" >> $GITHUB_ENV
+        echo "LTO=thin" >> $GITHUB_ENV
+        #echo "LTO=off" >> $GITHUB_ENV
+        echo "LLVM=1" >> $GITHUB_ENV
+        echo "LLVM_IAS=1" >> $GITHUB_ENV
+        echo "KBUILD_BUILD_USER=github" >> $GITHUB_ENV
+        echo "KBUILD_BUILD_HOST=actions" >> $GITHUB_ENV
+        echo "LLVM_ENABLE_PROJECTS=clang;polly;lld" >> $GITHUB_ENV
+        #echo "LLVM_ENABLE_PROJECTS=clang;lld" >> $GITHUB_ENV
+        #echo "LLVM_ENABLE_PROJECTS=clang" >> $GITHUB_ENV
+        echo "WITH_POLLY=on" >> $GITHUB_ENV
+        #echo "WITH_POLLY=off" >> $GITHUB_ENV
+        echo "LLVM_USE_LINKER=lld" >> $GITHUB_ENV
+        echo "LLVM_ENABLE_LLD=on" >> $GITHUB_ENV
+        #echo "LLVM_ENABLE_LLD=off" >> $GITHUB_ENV
+        echo "LLVM_HOST_TRIPLE=aarch64-linux-gnu" >> $GITHUB_ENV
+        echo "LLVM_DEFAULT_TARGET_TRIPLE=aarch64-linux-gnu" >> $GITHUB_ENV
+        echo "LLVM_TARGETS_TO_BUILD=aarch64" >> $GITHUB_ENV
+        echo "MYBRANCH=$(git branch --show-current)" >> $GITHUB_ENV
+        echo "CCACHE_DIR="$HOME/.ccache" >> $GITHUB_ENV
+        mkdir -p rejects
+        mkdir -p logs
+        cd logs
+        echo "LOGS_DIR=$(pwd)" >> $GITHUB_ENV
+
     - name: Install deps
       #if: false
       run: |
@@ -40,7 +99,7 @@ jobs:
         sudo apt upgrade -y > /dev/null 2>&1
         echo "Upgrade completed"
         sudo apt install -y bc bison flex libssl-dev build-essential \
-        ccache libncurses5-dev libncursesw5-dev python3 zstd repo git \
+        libncurses5-dev libncursesw5-dev python3 zstd repo git \
         git-lfs device-tree-compiler lz4 xz-utils fontconfig lib32z1-dev \
         zlib1g-dev python-is-python3 p7zip-full android-sdk-libsparse-utils \
         erofs-utils default-jdk gnupg gperf zip curl libncurses-dev libx11-dev \
@@ -59,12 +118,11 @@ jobs:
       #if: false
       run: |
         sudo apt install -y ccache build-essential curl git repo zip make sudo grep unzip lld clang-tools llvm-dev mold --fix-missing
-        export CCACHE_DIR="$HOME/.ccache"
         mkdir -p $CCACHE_DIR
         touch $CCACHE_DIR/ccache.conf
         echo "ccache.conf"
         cat $CCACHE_DIR/ccache.conf
-        cp -v $CCACHE_DIR/ccache.conf /var/log/ccache_first.conf
+        cp -v $CCACHE_DIR/ccache.conf $LOGS_DIR/ccache_first.conf
         echo "CCACHE_DIR=$CCACHE_DIR" >> $GITHUB_ENV
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
         echo "PATH=$PATH" >> $GITHUB_ENV
@@ -84,7 +142,7 @@ jobs:
         echo "log_file = /var/log/ccache" >> $CCACHE_DIR/ccache.conf
         #echo "sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros,clang_index_store,gcno_cwd" >> $CCACHE_DIR/ccache.conf
         echo "sloppiness = file_stat_matches,time_macros,clang_index_store,gcno_cwd,locale,random_seed" >> $CCACHE_DIR/ccache.conf
-        cp -v $CCACHE_DIR/ccache.conf /var/log/ccache.conf
+        cp -v $CCACHE_DIR/ccache.conf $LOGS_DIR/ccache.conf
 
     - name: Cache restore
       #if: false
@@ -139,59 +197,6 @@ jobs:
         #cat ./patch/*.patch > custom.patch
         #patch -p1 < custom.patch
 
-    - name: Configure env
-      run: |
-        echo "ARCH=arm64" >> $GITHUB_ENV
-        echo "SUBARCH=arm64" >> $GITHUB_ENV
-        #clang triplet
-        echo "CROSS_COMPILE=aarch64-none-linux-gnu-" >> $GITHUB_ENV
-        #gcc triplet
-        #echo "CROSS_COMPILE=aarch64-linux-gnu-" >> $GITHUB_ENV
-        echo "CLANG_TRIPLE=aarch64-linux-gnu-" >> $GITHUB_ENV
-        echo "CC=ccache clang" >> $GITHUB_ENV
-        echo "CXX=ccache clang++" >> $GITHUB_ENV
-        #echo "CC=clang" >> $GITHUB_ENV
-        #echo "CXX=clang++" >> $GITHUB_ENV
-        echo "CPP=clang-cpp" >> $GITHUB_ENV
-        echo "AR=llvm-ar" >> $GITHUB_ENV
-        echo "NM=llvm-nm" >> $GITHUB_ENV
-        echo "LD=ld.lld" >> $GITHUB_ENV
-        #echo "LD=ld.mold" >> $GITHUB_ENV
-        echo "STRIP=llvm-strip" >> $GITHUB_ENV
-        echo "OBJCOPY=llvm-objcopy" >> $GITHUB_ENV
-        echo "OBJDUMP=llvm-objdump" >> $GITHUB_ENV
-        echo "RANLIB=llvm-ranlib" >> $GITHUB_ENV
-        echo "READELF=llvm-readelf" >> $GITHUB_ENV
-        echo "HOSTCC=ccache clang" >> $GITHUB_ENV
-        echo "HOSTCXX=ccache clang++" >> $GITHUB_ENV
-        #echo "HOSTCC=clang" >> $GITHUB_ENV
-        #echo "HOSTCXX=clang++" >> $GITHUB_ENV
-        echo "CFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
-        #echo "CFLAGS=\"-O3\"" >> $GITHUB_ENV
-        echo "CXXFLAGS=\"-O3 -flto=thin\"" >> $GITHUB_ENV
-        #echo "CXXFLAGS=\"-O3\"" >> $GITHUB_ENV
-        #echo "LDFLAGS=-flto=thin -fuse-ld=lld" >> $GITHUB_ENV
-        #echo "LDFLAGS=-fuse-ld=lld" >> $GITHUB_ENV
-        echo "LDFLAGS=\"-flto=thin\"" >> $GITHUB_ENV
-        #echo "LDFLAGS=-fuse-ld=gold" >> $GITHUB_ENV
-        echo "LTO=thin" >> $GITHUB_ENV
-        #echo "LTO=off" >> $GITHUB_ENV
-        echo "LLVM=1" >> $GITHUB_ENV
-        echo "LLVM_IAS=1" >> $GITHUB_ENV
-        echo "KBUILD_BUILD_USER=github" >> $GITHUB_ENV
-        echo "KBUILD_BUILD_HOST=actions" >> $GITHUB_ENV
-        echo "LLVM_ENABLE_PROJECTS=clang;polly;lld" >> $GITHUB_ENV
-        #echo "LLVM_ENABLE_PROJECTS=clang;lld" >> $GITHUB_ENV
-        #echo "LLVM_ENABLE_PROJECTS=clang" >> $GITHUB_ENV
-        echo "WITH_POLLY=on" >> $GITHUB_ENV
-        #echo "WITH_POLLY=off" >> $GITHUB_ENV
-        echo "LLVM_USE_LINKER=lld" >> $GITHUB_ENV
-        echo "LLVM_ENABLE_LLD=on" >> $GITHUB_ENV
-        #echo "LLVM_ENABLE_LLD=off" >> $GITHUB_ENV
-        echo "LLVM_HOST_TRIPLE=aarch64-linux-gnu" >> $GITHUB_ENV
-        echo "LLVM_DEFAULT_TARGET_TRIPLE=aarch64-linux-gnu" >> $GITHUB_ENV
-        echo "LLVM_TARGETS_TO_BUILD=aarch64" >> $GITHUB_ENV
-
     - name: Defconfig
       run: |
         make -j$(nproc) O=out stone_defconfig
@@ -212,7 +217,6 @@ jobs:
       if: always()
       continue-on-error: true
       run: |
-        mkdir -p rejects
         #find . -name "*.rej" | zip -@ rejects/rejects.zip
         find . -name "*.rej" -exec cp -v "{}" rejects  \;
 
@@ -241,7 +245,7 @@ jobs:
         cat $CCACHE_DIR/ccache.conf
         echo "ccache.conf"
         ccache --show-config
-        ccache --show-config >> /var/log/ccache_config
+        ccache --show-config >> $LOGS_DIR/ccache_config
 
     - name: Cache save
       #if: false
