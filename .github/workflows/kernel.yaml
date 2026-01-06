@@ -3,7 +3,7 @@ name: Build Android Kernel (moonstone)
 on:
   workflow_dispatch:
   push:
-    branches: [ jyjyc-mods, jyjyc-mods-test-1, mods-asdf ]
+    branches: [ jyjyc-mods, jyjyc-mods-test-1, mods-asdf.disable ]
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
         submodules: recursive
 
     - name: Install deps
-      if: false
+      #if: false
       run: |
         sudo apt update > /dev/null 2>&1
         sudo apt remove -y firefox > /dev/null 2>&1
@@ -55,10 +55,14 @@ jobs:
         #sudo apt install -y gcc-aarch64-linux-gnu --fix-missing
         echo "Apt packages install completed"
 
+    - name: Install minimal build environment with ccache
+      if: false
+      run: |
+        sudo apt install -y ccache build-essential curl git repo zip make sudo grep unzip lld clang-tools llvm-dev mold --fix-missing
+  
     - name: Configure ccache
       #if: false
       run: |
-        sudo apt install -y ccache build-essential curl git repo zip make sudo grep unzip lld clang-tools llvm-dev mold --fix-missing
         export CCACHE_DIR="$HOME/.ccache"
         mkdir -p $CCACHE_DIR
         touch $CCACHE_DIR/ccache.conf
@@ -67,21 +71,33 @@ jobs:
         echo "CCACHE_DIR=$CCACHE_DIR" >> $GITHUB_ENV
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
         echo "PATH=$PATH" >> $GITHUB_ENV
+        echo "base_dir = $HOME/work/moonstone_kernel_patched/moonstone_kernel_patched" >> $CCACHE_DIR/ccache.conf
         echo "max_size = 8G" >> $CCACHE_DIR/ccache.conf
         echo "compression = true" >> $CCACHE_DIR/ccache.conf
+        echo "compression_level = 3" >> $CCACHE_DIR/ccache.conf
+        #echo "compression_level = 5" >> $CCACHE_DIR/ccache.conf
+        echo "absolute_paths_in_stderr = true" >> $CCACHE_DIR/ccache.conf
+        echo "cache_dir = $CCACHE_DIR" >> $CCACHE_DIR/ccache.conf
+        echo "compiler_check = content" >> $CCACHE_DIR/ccache.conf
         echo "hash_dir = false" >> $CCACHE_DIR/ccache.conf
-        echo "sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros" >> $CCACHE_DIR/ccache.conf
+        echo "hard_link = false" >> $CCACHE_DIR/ccache.conf
+        echo "file_clone = false" >> $CCACHE_DIR/ccache.conf
+        echo "inode_cache = false" >> $CCACHE_DIR/ccache.conf
+        echo "umask = 002" >> $CCACHE_DIR/ccache.conf
+        echo "log_file = /var/log/ccache" >> $CCACHE_DIR/ccache.conf
+        #echo "sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros,clang_index_store,gcno_cwd" >> $CCACHE_DIR/ccache.conf
+        echo "sloppiness = file_stat_matches,time_macros,clang_index_store,gcno_cwd,locale,random_seed" >> $CCACHE_DIR/ccache.conf
 
-    - name: Cache compilation
+    - name: Cache restore
       #if: false
-      continue-on-error: true
-      uses: actions/cache@v4
+      uses: actions/cache/restore@v5
       with:
-        path: $HOME/.ccache
-        key: ccache-${{ runner.os }}-${{ github.run_id }}
+        path: $CCACHE_DIR
+        #key: ccache-${{ runner.os }}-${{ github.run_id }}
+        key: ccache-${{ runner.os }}
         restore-keys: |
-          ccache-${{ runner.os }}-
-        save-always: true
+          ccache-${{ runner.os }}
+          ccache-
         enableCrossOsArchive: true
 
     - name: Patch
@@ -199,20 +215,35 @@ jobs:
       continue-on-error: true
       run: |
         mkdir -p rejects
-        find . -name "*.rej" | zip -@ rejects/rejects.zip
+        #find . -name "*.rej" | zip -@ rejects/rejects.zip
+        find . -name "*.rej" -exec cp -v "{}" rejects  \;
+
+    - name: Upload some logs
+      #if: always()
+      #continue-on-error: true
+      uses: actions/upload-artifact@v6
+      with:
+        name: logs
+        if-no-files-found: warn
+        path: /var/log/ccache
 
     - name: Upload patch rejects
       if: always()
-      continue-on-error: true
-      uses: actions/upload-artifact@v4
+      #continue-on-error: true
+      uses: actions/upload-artifact@v6
       with:
         name: patch-rejects
+        if-no-files-found: ignore
         path: rejects/
 
     - name: Build kernel
       if: false
       run: |
         make -j$(nproc) O=out
+
+    - name: Tweak ccache
+      run: |
+        find $CCACHE_DIR -type d | xargs chmod g+s
 
     - name: Print debug infos
       run: |
@@ -222,10 +253,23 @@ jobs:
         echo "ccache.conf"
         ccache --show-config
 
+    - name: Cache save
+      #if: false
+      uses: actions/cache/save@v5
+      with:
+        path: $CCACHE_DIR
+        #key: ccache-${{ runner.os }}-${{ github.run_id }}
+        key: ccache-${{ runner.os }}
+        #restore-keys: |
+          #ccache-${{ runner.os }}
+          #ccache-
+        enableCrossOsArchive: true
+
     - name: Archive build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: kernel-out
+        if-no-files-found: error
         path: |
           out/arch/arm64/boot/Image*
           out/arch/arm64/boot/dts/**/*.dtb
