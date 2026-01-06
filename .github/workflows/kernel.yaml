@@ -83,8 +83,8 @@ jobs:
         echo "LLVM_TARGETS_TO_BUILD=aarch64" >> $GITHUB_ENV
         echo "MYBRANCH=$(git branch --show-current)" >> $GITHUB_ENV
         echo "CCACHE_DIR="$HOME/.ccache" >> $GITHUB_ENV
-        mkdir -p rejects
-        mkdir -p logs
+        mkdir -v -p rejects
+        mkdir -v -p logs
         cd logs
         echo "LOGS_DIR=$(pwd)" >> $GITHUB_ENV
 
@@ -118,7 +118,7 @@ jobs:
       #if: false
       run: |
         sudo apt install -y ccache build-essential curl git repo zip make sudo grep unzip lld clang-tools llvm-dev mold --fix-missing
-        mkdir -p $CCACHE_DIR
+        mkdir -v -p $CCACHE_DIR
         touch $CCACHE_DIR/ccache.conf
         echo "ccache.conf"
         cat $CCACHE_DIR/ccache.conf
