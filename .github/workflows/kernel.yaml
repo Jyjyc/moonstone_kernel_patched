@@ -3,7 +3,7 @@ name: Build Android Kernel (moonstone)
 on:
   workflow_dispatch:
   push:
-    branches: [ jyjyc-mods, jyjyc-mods-test-1, mods-asdf.disable ]
+    branches: [ jyjyc-mods, jyjyc-mods-test-1, mods-asdf ]
 
 jobs:
   build:
@@ -55,19 +55,16 @@ jobs:
         #sudo apt install -y gcc-aarch64-linux-gnu --fix-missing
         echo "Apt packages install completed"
 
-    - name: Install minimal build environment with ccache
-      if: false
-      run: |
-        sudo apt install -y ccache build-essential curl git repo zip make sudo grep unzip lld clang-tools llvm-dev mold --fix-missing
-  
     - name: Configure ccache
       #if: false
       run: |
+        sudo apt install -y ccache build-essential curl git repo zip make sudo grep unzip lld clang-tools llvm-dev mold --fix-missing
         export CCACHE_DIR="$HOME/.ccache"
         mkdir -p $CCACHE_DIR
         touch $CCACHE_DIR/ccache.conf
         echo "ccache.conf"
         cat $CCACHE_DIR/ccache.conf
+        cp -v $CCACHE_DIR/ccache.conf /var/log/ccache_first.conf
         echo "CCACHE_DIR=$CCACHE_DIR" >> $GITHUB_ENV
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
         echo "PATH=$PATH" >> $GITHUB_ENV
@@ -87,6 +84,7 @@ jobs:
         echo "log_file = /var/log/ccache" >> $CCACHE_DIR/ccache.conf
         #echo "sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros,clang_index_store,gcno_cwd" >> $CCACHE_DIR/ccache.conf
         echo "sloppiness = file_stat_matches,time_macros,clang_index_store,gcno_cwd,locale,random_seed" >> $CCACHE_DIR/ccache.conf
+        cp -v $CCACHE_DIR/ccache.conf /var/log/ccache.conf
 
     - name: Cache restore
       #if: false
@@ -218,15 +216,6 @@ jobs:
         #find . -name "*.rej" | zip -@ rejects/rejects.zip
         find . -name "*.rej" -exec cp -v "{}" rejects  \;
 
-    - name: Upload some logs
-      #if: always()
-      #continue-on-error: true
-      uses: actions/upload-artifact@v6
-      with:
-        name: logs
-        if-no-files-found: warn
-        path: /var/log/ccache
-
     - name: Upload patch rejects
       if: always()
       #continue-on-error: true
@@ -252,6 +241,7 @@ jobs:
         cat $CCACHE_DIR/ccache.conf
         echo "ccache.conf"
         ccache --show-config
+        ccache --show-config >> /var/log/ccache_config
 
     - name: Cache save
       #if: false
@@ -265,6 +255,19 @@ jobs:
           #ccache-
         enableCrossOsArchive: true
 
+    - name: Upload some logs
+      #if: always()
+      #continue-on-error: true
+      uses: actions/upload-artifact@v6
+      with:
+        name: logs
+        if-no-files-found: warn
+        path: |
+          /var/log/ccache
+          /var/log/ccache.conf
+          /var/log/ccache_first.conf
+          /var/log/ccache_config
+
     - name: Archive build artifacts
       uses: actions/upload-artifact@v6
       with:
@@ -274,4 +277,3 @@ jobs:
           out/arch/arm64/boot/Image*
           out/arch/arm64/boot/dts/**/*.dtb
           out/arch/arm64/boot/dtbo.img
-          
