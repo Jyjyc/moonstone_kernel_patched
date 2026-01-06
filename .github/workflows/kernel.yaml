@@ -86,7 +86,7 @@ jobs:
         mkdir -v -p rejects
         mkdir -v -p logs
         cd logs
-        echo "LOGS_DIR=$(pwd)" >> $GITHUB_ENV
+        #echo "LOGS_DIR=$(pwd)" >> $GITHUB_ENV
 
     - name: Install deps
       #if: false
