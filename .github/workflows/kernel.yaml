@@ -91,12 +91,12 @@ jobs:
     - name: Install deps
       #if: false
       run: |
-        sudo apt update > /dev/null 2>&1
-        sudo apt remove -y firefox > /dev/null 2>&1
+        sudo apt update > /dev/null
+        sudo apt remove -y firefox > /dev/null
         echo "Apt update and Firefox uninstall completed"
-        sudo apt-mark hold linux-* > /dev/null 2>&1
+        sudo apt-mark hold linux-* > /dev/null
         echo "Apt hold successful"
-        sudo apt upgrade -y > /dev/null 2>&1
+        sudo apt upgrade -y > /dev/null
         echo "Upgrade completed"
         sudo apt install -y bc bison flex libssl-dev build-essential \
         libncurses5-dev libncursesw5-dev python3 zstd repo git \
