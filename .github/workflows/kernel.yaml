@@ -139,7 +139,7 @@ jobs:
         echo "file_clone = false" >> $CCACHE_DIR/ccache.conf
         echo "inode_cache = false" >> $CCACHE_DIR/ccache.conf
         echo "umask = 002" >> $CCACHE_DIR/ccache.conf
-        echo "log_file = /var/log/ccache" >> $CCACHE_DIR/ccache.conf
+        echo "log_file = $LOGS_DIR/ccache.log" >> $CCACHE_DIR/ccache.conf
         #echo "sloppiness = file_stat_matches,include_file_mtime,include_file_ctime,time_macros,clang_index_store,gcno_cwd" >> $CCACHE_DIR/ccache.conf
         echo "sloppiness = file_stat_matches,time_macros,clang_index_store,gcno_cwd,locale,random_seed" >> $CCACHE_DIR/ccache.conf
         cp -v $CCACHE_DIR/ccache.conf $LOGS_DIR/ccache.conf
@@ -267,10 +267,7 @@ jobs:
         name: logs
         if-no-files-found: warn
         path: |
-          /var/log/ccache
-          /var/log/ccache.conf
-          /var/log/ccache_first.conf
-          /var/log/ccache_config
+          $LOGS_DIR
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v6
