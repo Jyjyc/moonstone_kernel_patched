@@ -30,6 +30,7 @@ jobs:
         submodules: recursive
 
     - name: Install deps
+      if: false
       run: |
         sudo apt update > /dev/null 2>&1
         sudo apt remove -y firefox > /dev/null 2>&1
@@ -57,9 +58,12 @@ jobs:
     - name: Configure ccache
       #if: false
       run: |
+        sudo apt install -y ccache build-essential curl git repo zip make sudo grep unzip lld clang-tools llvm-dev mold --fix-missing
         export CCACHE_DIR="$HOME/.ccache"
         mkdir -p $CCACHE_DIR
         touch $CCACHE_DIR/ccache.conf
+        echo "ccache.conf"
+        cat $CCACHE_DIR/ccache.conf
         echo "CCACHE_DIR=$CCACHE_DIR" >> $GITHUB_ENV
         export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
         echo "PATH=$PATH" >> $GITHUB_ENV
@@ -206,8 +210,17 @@ jobs:
         path: rejects/
 
     - name: Build kernel
+      if: false
       run: |
         make -j$(nproc) O=out
+
+    - name: Print debug infos
+    - run: |
+        echo "CCACHE_DIR=$CCACHE_DIR"
+        echo "ccache.conf"
+        cat $CCACHE_DIR/ccache.conf
+        echo "ccache.conf"
+        ccache --show-config
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
