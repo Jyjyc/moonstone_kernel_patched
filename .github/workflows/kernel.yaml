@@ -82,11 +82,11 @@ jobs:
         echo "LLVM_DEFAULT_TARGET_TRIPLE=aarch64-linux-gnu" >> $GITHUB_ENV
         echo "LLVM_TARGETS_TO_BUILD=aarch64" >> $GITHUB_ENV
         echo "MYBRANCH=$(git branch --show-current)" >> $GITHUB_ENV
-        echo "CCACHE_DIR="$HOME/.ccache" >> $GITHUB_ENV
+        echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
         mkdir -v -p rejects
         mkdir -v -p logs
         cd logs
-        #echo "LOGS_DIR=$(pwd)" >> $GITHUB_ENV
+        echo "LOGS_DIR=$(pwd)" >> $GITHUB_ENV
 
     - name: Install deps
       #if: false
