@@ -215,7 +215,7 @@ jobs:
         make -j$(nproc) O=out
 
     - name: Print debug infos
-    - run: |
+      run: |
         echo "CCACHE_DIR=$CCACHE_DIR"
         echo "ccache.conf"
         cat $CCACHE_DIR/ccache.conf
